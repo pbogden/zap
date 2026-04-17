@@ -35,7 +35,11 @@ Flask's role ends after step 1. The rest is entirely Make.
 
 ## Building the Make Scenario
 
-This scenario uses Make's **waiting for a webhook response** pattern, which
+This stage uses 3 Make scenarios total (request handler + approve + decline),
+which exceeds the free plan's 2-scenario limit. For an instructor demo, deactivate
+the Stage 1 or Stage 2 scenario before activating the Stage 3 ones — the toggle
+is in the bottom-left corner of any open scenario and takes about 10 seconds.
+See [free-tier.md](free-tier.md) for the full swap sequence.
 pauses execution until an external event (the approval click) resumes it.
 
 ### Step 1 — Create the webhook trigger

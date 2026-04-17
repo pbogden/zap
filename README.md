@@ -17,6 +17,15 @@ The Flaskr tutorial teaches you Flask. This repo shows you what happens *after* 
 
 ---
 
+## Make.com Free Plan
+
+This demo runs on Make's free plan for an instructor-led walkthrough. The only
+constraint is a 2-active-scenario limit — Stage 3 requires 3 scenarios, so you'll
+swap them in and out as you move through the stages. See [docs/free-tier.md](docs/free-tier.md)
+for the full rundown, including the LinkedIn workaround and how to handle RSS polling.
+
+---
+
 ## Stages
 
 ### Stage 1 — Blog Post → Make → Slack + LinkedIn

@@ -144,6 +144,12 @@ RSS-to-email campaign directly from `/feed` with no Make involved at all.
 
 ### Building the RSS scenario in Make
 
+> **Free plan note:** Make polls RSS feeds on a 15-minute minimum interval,
+> so you can't demonstrate a live RSS trigger in real time without waiting.
+> Instead, use Make's **Run once** button to trigger the scenario manually
+> after publishing a post — it simulates an immediate poll and shows the full
+> flow without the wait. See [free-tier.md](free-tier.md) for details.
+
 1. Create a new scenario
 2. Add an **RSS / Atom Feed** trigger module
 3. Set the **Feed URL** to `http://localhost:5000/feed`

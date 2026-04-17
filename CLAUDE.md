@@ -83,6 +83,7 @@ All stages use `make_webhook.fire_webhook(event_type, payload)` — a fire-and-f
 |---|---|
 | `design-decisions.md` | Architectural principles — the "why" behind each pattern |
 | `sow-mapping.md` | How each stage maps to the Sentinel Security SOW deliverables |
+| `free-tier.md` | Make free plan constraints: 2-scenario limit, LinkedIn workaround, RSS "Run once" trick |
 | `stage1.md` | Make scenario walkthrough: Custom Webhook → Slack + LinkedIn |
 | `stage2.md` | Make scenario walkthrough: lead capture → HubSpot + email |
 | `stage3.md` | Make scenario walkthrough: approval workflow |

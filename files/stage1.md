@@ -117,3 +117,62 @@ Make: Custom Webhook
   └──► LinkedIn: Create Share
          Commentary: "{title}\n\n{summary}\n\n{url}"
 ```
+
+---
+
+## Alternate Approach: RSS Polling
+
+The blog also exposes an RSS 2.0 feed at `/feed`. This is the *pull* counterpart
+to the webhook's *push* model — instead of Flask notifying Make the moment a post
+is published, Make polls the feed on a schedule and acts on items it hasn't seen
+before.
+
+### When to use each
+
+| | Webhook (push) | RSS (pull) |
+|---|---|---|
+| Delivery timing | Immediate | On Make's polling schedule (min. ~15 min) |
+| Flask complexity | One function call | One route |
+| Make trigger | Custom Webhook | RSS / Atom Feed |
+| Works without Make | No — needs a listener | Yes — any RSS reader works |
+| Good for | Real-time notifications | Newsletter tools, feed aggregators |
+
+For a live demo in class, the webhook is more satisfying — you publish a post and
+Slack lights up immediately. RSS is better for discussing the broader ecosystem:
+Mailchimp, Substack, Buttondown, and most newsletter platforms can drive an
+RSS-to-email campaign directly from `/feed` with no Make involved at all.
+
+### Building the RSS scenario in Make
+
+1. Create a new scenario
+2. Add an **RSS / Atom Feed** trigger module
+3. Set the **Feed URL** to `http://localhost:5000/feed`
+   (use your deployed URL in production)
+4. Set the polling interval — 15 minutes is the minimum on free plans
+5. Add the same Slack and LinkedIn modules from the webhook scenario
+6. Map `{{title}}`, `{{link}}`, and `{{description}}` from the feed item
+   to the same fields you used before
+
+Make tracks which items it has already processed using the `<guid>` field,
+so it won't re-post old content when it polls.
+
+### Updated flow diagram
+
+```
+Make: RSS Feed trigger (polls /feed every N minutes)
+  │
+  │  New item detected: { title, link, description, pubDate }
+  ▼
+  ├──► Slack: Create Message
+  │      Text: "📝 New post: {title} — {link}"
+  │
+  └──► LinkedIn: Create Share
+         Commentary: "{title}\n\n{description}\n\n{link}"
+```
+
+### Discussion question
+
+The webhook fires the moment a post is saved, even during a draft or testing
+session. The RSS feed only exposes posts that are already public. In a production
+app, how would you add a `published` boolean to the `post` table and gate both
+the feed and the webhook on it?

@@ -1,0 +1,119 @@
+# Stage 1 — Blog Post → Make → Slack + LinkedIn
+
+## What This Demonstrates
+
+When a logged-in user publishes a blog post, Flask fires a POST request to a
+Make webhook URL. Make receives the payload and fans it out to two destinations:
+a Slack channel and a LinkedIn post.
+
+Your Flask app has no LinkedIn SDK, no Slack SDK, and no API keys for either.
+It just fires and forgets.
+
+---
+
+## The Payload Flask Sends
+
+```json
+{
+  "title": "Zero Trust in the Enterprise: What Actually Works",
+  "author": "nikki",
+  "url": "http://localhost:5000/1/detail",
+  "summary": "After three years of zero-trust implementations across financial..."
+}
+```
+
+---
+
+## Building the Make Scenario
+
+### Step 1 — Create a new scenario
+
+1. Log into [make.com](https://make.com) and open your workspace
+2. Click **Create a new scenario**
+3. Search for and select **Webhooks** as your first module
+
+### Step 2 — Configure the Custom Webhook trigger
+
+1. Add a **Custom Webhook** module
+2. Click **Add** to create a new webhook
+3. Name it `sentinel-blog-post`
+4. Click **Save** — Make will generate a URL like:
+   `https://hook.us1.make.com/abc123xyz`
+5. Copy this URL — you'll put it in your `.env` as `MAKE_WEBHOOK_BLOG_POST`
+
+**Teach Make the payload structure:**
+1. Click **Re-determine data structure**
+2. In a separate terminal, run the Flask app and publish a test post
+3. Make will receive the payload and map the fields automatically
+4. You should see `title`, `author`, `url`, and `summary` appear as available fields
+
+### Step 3 — Add a Slack module
+
+1. Click the **+** after the webhook module
+2. Search for **Slack** and select **Create a Message**
+3. Connect your Slack workspace (OAuth flow)
+4. Configure:
+   - **Channel:** `#content` (or whichever channel you want)
+   - **Text:**
+     ```
+     📝 New post published: *{{title}}*
+     By {{author}} — {{url}}
+     ```
+
+### Step 4 — Add a LinkedIn module
+
+1. Click **+** after the Slack module
+2. Search for **LinkedIn** and select **Create a Share**
+3. Connect your LinkedIn account
+4. Configure:
+   - **Visibility:** Public
+   - **Commentary:**
+     ```
+     New from Sentinel Security: {{title}}
+
+     {{summary}}
+
+     Read more → {{url}}
+     ```
+
+### Step 5 — Activate and test
+
+1. Toggle the scenario **ON** (bottom left)
+2. Make sure your `.env` has the webhook URL set:
+   ```
+   MAKE_WEBHOOK_BLOG_POST=https://hook.us1.make.com/abc123xyz
+   ```
+3. Restart Flask and publish a post
+4. Check Make's **History** tab — you should see a successful run
+5. Check Slack and LinkedIn
+
+---
+
+## Error Handling to Discuss
+
+The `fire_webhook()` utility in `make_webhook.py` has a 5-second timeout and
+catches all exceptions. Flask will never crash or return an error to the user
+because of a Make failure. Ask students:
+
+- What happens to the post if Make is down?
+- Is that the right behavior? When might it not be?
+- How would you build a retry mechanism?
+
+---
+
+## Scenario Flow Diagram
+
+```
+Flask (blog.py)
+  │
+  │  POST { title, author, url, summary }
+  ▼
+Make: Custom Webhook
+  │
+  ├──► Slack: Create Message
+  │      Channel: #content
+  │      Text: "📝 New post: {title} ..."
+  │
+  └──► LinkedIn: Create Share
+         Commentary: "{title}\n\n{summary}\n\n{url}"
+```

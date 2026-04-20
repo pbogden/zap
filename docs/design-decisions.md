@@ -67,6 +67,12 @@ change, a PR, a test run, and a deployment.
 live outside your codebase. Business logic that must be reliable, auditable,
 and version-controlled should live inside it.
 
+**See it in practice:** The [Framer demo](../framer-demo/README.md) replaces
+Flask entirely with a no-code tool — but the Make scenario is unchanged. The
+boundary holds even when one side of it disappears. The
+[Flask vs. Framer comparison](../framer-demo/docs/comparison.md) shows exactly
+what moves across that boundary and what doesn't.
+
 ---
 
 ## 3. Push and pull are both valid — know when to use each

@@ -125,6 +125,7 @@ architectural context for the decisions behind the demo.
 | [docs/stage1.md](docs/stage1.md) | Stage 1 Make setup: webhook + RSS alternate approach |
 | [docs/stage2.md](docs/stage2.md) | Stage 2 Make setup: lead capture → HubSpot + email |
 | [docs/stage3.md](docs/stage3.md) | Stage 3 Make setup: approval workflow |
+| [framer-demo/](framer-demo/README.md) | Same Stage 2 outcome, zero backend — Framer form fires the same Make scenario |
 
 ---
 

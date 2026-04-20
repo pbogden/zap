@@ -108,3 +108,40 @@ site, they're usually acceptable. For a lead capture system where no lead can be
 lost, the Flask pattern is the right choice.
 
 That's the conversation this demo is designed to start.
+
+---
+
+## Is Make Actually Necessary Here?
+
+No — and that's worth knowing.
+
+Framer has native integrations for HubSpot, Google Sheets, and email. For
+the core Sentinel requirement (lead capture → HubSpot), you could skip Make
+entirely and wire Framer directly to HubSpot in about three clicks. No
+webhook, no scenario, no Make account.
+
+**So why use Make in this demo?**
+
+The reason is pedagogical, not practical. The entire argument of this demo
+is that Make is indifferent to where a webhook comes from — Flask or Framer,
+it doesn't matter. That lesson only works if Make is present in both demos.
+If you replace it with Framer's native HubSpot connector, you lose the
+comparison entirely.
+
+There's also a visibility argument: native integrations are invisible.
+When Framer sends directly to HubSpot, there's no payload to inspect, no
+execution history to read, no intermediate step you can pause and examine.
+Make's visual execution trace is what makes the integration *teachable*.
+
+**The honest production answer:** For a real Sentinel delivery, you'd
+evaluate whether Framer's native HubSpot connector is sufficient before
+reaching for Make. It probably is for Stage 2. Make earns its place in
+Stage 3 (the approval workflow), where there's no native Framer equivalent
+and human-in-the-loop logic genuinely needs an orchestration layer.
+
+This is a good thing to say out loud in class:
+
+> *"We're routing through Make here to make the data flow visible and to
+> keep both demos comparable. In a real project, always ask whether a
+> native connector eliminates a moving part — fewer moving parts is usually
+> better."*

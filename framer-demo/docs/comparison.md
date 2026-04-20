@@ -199,3 +199,27 @@ Framer and Flask are both valid ways to fire a webhook. The question isn't
 which tool fires it better — they're identical from Make's perspective. The
 question is what happens *before* the webhook fires: who owns the data,
 where it lives, and what happens when things go wrong.
+
+---
+
+## A note on whether Make is necessary at all
+
+Framer has native integrations for HubSpot, Google Sheets, and email. For
+Stage 2 specifically, you could bypass Make entirely — Framer → HubSpot
+natively, no webhook involved. It's simpler and has fewer moving parts.
+
+This demo uses Make anyway, for two reasons:
+
+1. **Comparability.** The lesson that Make is indifferent to its trigger
+   source only works if Make is in both demos. Replace it with a native
+   connector and the comparison disappears.
+
+2. **Visibility.** Native integrations are opaque. Make's execution history
+   shows the JSON arriving, the modules firing, and the contact appearing in
+   HubSpot — step by step. That's what makes it teachable.
+
+The broader principle: always ask whether a native connector eliminates a
+moving part before adding an orchestration layer. For Stage 2, the native
+connector probably wins in production. For Stage 3 (the approval workflow),
+Make is genuinely necessary — there's no native Framer equivalent of a
+human-in-the-loop decision gate.

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Contact Us{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <p>
+    Interested in working with Sentinel Security? Fill out the form below
+    and a member of our team will be in touch.
+  </p>
+
+  <form method="post">
+    <label for="name">Name <span class="required">*</span></label>
+    <input
+      name="name"
+      id="name"
+      value="{{ request.form.get('name', '') }}"
+      autocomplete="name"
+      required>
+
+    <label for="email">Email <span class="required">*</span></label>
+    <input
+      type="email"
+      name="email"
+      id="email"
+      value="{{ request.form.get('email', '') }}"
+      autocomplete="email"
+      required>
+
+    <label for="company">Company</label>
+    <input
+      name="company"
+      id="company"
+      value="{{ request.form.get('company', '') }}"
+      autocomplete="organization">
+
+    <label for="message">Message <span class="required">*</span></label>
+    <textarea
+      name="message"
+      id="message"
+      rows="5"
+      required>{{ request.form.get('message', '') }}</textarea>
+
+    <input type="submit" value="Send Message">
+  </form>
+
+  <p class="hint">
+    <strong>Stage 2 demo:</strong> Submitting this form saves the lead to
+    the database, then fires a webhook to Make. Make creates a contact in
+    HubSpot and sends a confirmation email to the prospect.
+  </p>
+{% endblock %}

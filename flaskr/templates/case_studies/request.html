@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Request Access{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <p>
+    You're requesting the full case study for:
+    <strong>{{ study['title'] }}</strong> ({{ study['industry'] }})
+  </p>
+  <p>
+    Fill in your details below. The Sentinel Security team will review your
+    request and send the materials to your email address if approved — usually
+    within one business day.
+  </p>
+
+  <form method="post">
+    <label for="name">Name <span class="required">*</span></label>
+    <input
+      name="name"
+      id="name"
+      value="{{ request.form.get('name', '') }}"
+      autocomplete="name"
+      required>
+
+    <label for="email">Email <span class="required">*</span></label>
+    <input
+      type="email"
+      name="email"
+      id="email"
+      value="{{ request.form.get('email', '') }}"
+      autocomplete="email"
+      required>
+
+    <label for="company">Company</label>
+    <input
+      name="company"
+      id="company"
+      value="{{ request.form.get('company', '') }}"
+      autocomplete="organization">
+
+    <input type="submit" value="Submit Request">
+  </form>
+
+  <p><a href="{{ url_for('case_studies.index') }}">← Back to Case Studies</a></p>
+{% endblock %}

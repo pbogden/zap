@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Case Studies{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <p>
+    Browse our work below. Full case studies are available upon request —
+    we review each inquiry before sending materials.
+  </p>
+
+  {% for study in studies %}
+    <article class="case-study-card">
+      <header>
+        <h2>{{ study['title'] }}</h2>
+        <span class="industry-tag">{{ study['industry'] }}</span>
+      </header>
+      <p>{{ study['summary'] }}</p>
+      <a href="{{ url_for('case_studies.request_access', id=study['id']) }}" class="btn">
+        Request Full Case Study →
+      </a>
+    </article>
+    {% if not loop.last %}<hr>{% endif %}
+  {% else %}
+    <p>No case studies available yet.</p>
+  {% endfor %}
+
+  <p class="hint">
+    <strong>Stage 3 demo:</strong> Clicking "Request Full Case Study" submits
+    your info to Flask, which fires a webhook to Make. Make emails the Sentinel
+    team for approval — if approved, Make sends you the download link directly.
+  </p>
+{% endblock %}

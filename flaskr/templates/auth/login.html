@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Log In{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="username">Username</label>
+    <input name="username" id="username" autocomplete="username">
+
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" autocomplete="current-password">
+
+    <input type="submit" value="Log In">
+  </form>
+  <p>New here? <a href="{{ url_for('auth.register') }}">Register</a></p>
+{% endblock %}

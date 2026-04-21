@@ -1,107 +1,90 @@
-# Project Orientation: Platform, Framer, and Make.com
+# Project Orientation: Platform and Integration
 
 This document is for the student team building Sentinel Security's website, and for anyone
 coming into the project without prior experience with the tools involved. It explains what
-the platform options are, how Framer and Make.com fit together, and where things can go
+the platform options are, how the site and Make.com fit together, and where things can go
 wrong.
+
+*Updated April 21, 2026 based on pre-kickoff meeting notes (see `ee.md`).*
 
 ---
 
 ## What you're building
 
-A modernized marketing website for a security consulting firm. The site needs to do four
-things that a basic static site can't:
+A modernized marketing website for a security consulting firm. The current site is broken
+and effectively inert — no analytics, no lead capture, no blog, no CRM. Sentinel Security
+doesn't know if anyone visits the site. Prospective clients who find them on LinkedIn or at
+conferences land on a site that doesn't represent the quality of their work.
 
-1. **Convert LinkedIn visitors** — prospective clients discover Sentinel Security on LinkedIn and click through; the website needs to be good enough that they don't immediately leave
-2. **Capture leads** from a contact form and route them to a CRM (HubSpot or equivalent)
+The site needs to do several things a basic static site can't:
+
+1. **Convert LinkedIn visitors** — prospective clients discover Sentinel Security on LinkedIn
+   and click through; the website needs to be good enough that they don't immediately leave
+2. **Capture leads** from a contact form and route them to a CRM
 3. **Gate case study access** — visitors request access, Sentinel Security reviews and approves
-4. **Host video** with a client-accessible archive
-5. **Support content marketing** — a blog gives visitors something substantive to read and a reason to return; it also gives Sentinel Security material to share manually on LinkedIn
+4. **Support a blog** — gives visitors something substantive to read and gives Sentinel
+   Security material to share on LinkedIn
+5. **Host video** — they do webinars and speaking engagements; they want a place to put them
+6. **Analytics** — basic traffic visibility; they currently have none
 
-After launch, **Nikki and Stacy at Sentinel Security will manage the site themselves** —
-adding blog posts, updating case studies, editing page copy — without developer help and
-without technical skills. That requirement shapes the platform choice more than anything
-else.
+**What's not in place yet:** No CRM. No blog. No email marketing. No intake form. No
+videos. The content exists in a brochure and in people's heads, but hasn't been organized
+for the web.
+
+**Who manages the site after handoff:** This is an open question. Stacy is the operational
+contact and the person most likely to touch the site day-to-day, but she struggled with the
+existing Framer site. The platform choice needs to be something she can actually use.
 
 ---
 
 ## The platform decision
 
-The SOW names Framer as the default platform but leaves the door open for an alternative to
-be chosen during discovery. This is a real decision worth making carefully, because the
-existing Framer site is in poor shape and neither Nikki nor Stacy has the technical
-familiarity to maintain it. Staying on Framer is not a given.
+The SOW names Framer as the default but leaves the door open for an alternative. Based on
+the pre-kickoff meeting, Framer is effectively ruled out: Stacy reports that the existing
+site was locked down by whoever built it, she couldn't modify sections or keep responsive
+versions in sync, and the site has deteriorated as a result. These are not user errors —
+they reflect real limitations in how Framer was used here.
 
-The realistic options are:
+The site needs to be rebuilt regardless. The question is what to rebuild it in.
 
-**Framer**
-A visual web development tool built on React. Strong for design-led builds; the CMS works
-but the content editing experience for non-technical users is not its strength. The existing
-site is on Framer, but that's not a compelling reason to stay — the site needs to be
-rebuilt regardless.
-
-**Webflow**
+**Webflow** — the most likely choice for this engagement.
 The closest alternative to Framer, with a significantly better CMS and content editor.
-Non-technical users can add blog posts, update pages, and manage collections without
-touching the visual editor. The integration story is similar to Framer — Make.com connects
-to Webflow via webhooks. Widely used for exactly this kind of professional marketing site.
-Webflow is the most likely alternative if Framer is ruled out.
+Non-technical users can add blog posts, update pages, and manage structured content without
+touching the visual editor. The integration story is the same as Framer — Make.com connects
+via webhooks. Widely used for exactly this kind of professional marketing site. A React
+developer can be productive in Webflow within a day or two; the learning curve is UI
+conventions, not new concepts.
 
-**WordPress**
-The most accessible content editing experience of any platform — Nikki and Stacy may
-already be familiar with it. Plugin ecosystem handles most integration needs, though it
-often means more maintenance overhead. Worth considering if content ownership is the
-primary concern and the team is comfortable with the tradeoffs.
+**Framer** — probably not the right choice here.
+Strong for design-led builds, but the content editing experience for non-technical users is
+not its strength, and the existing site is evidence of how Framer builds can become
+unmanageable without developer involvement. Not recommended unless there's a specific reason
+to revisit.
 
-**Next.js + headless CMS**
-You know React and Vite. Next.js is React with server-side rendering, file-based routing,
-and API routes built in — the step up from Vite that most professional React teams take.
-Vercel (the company behind Next.js) makes deployment as simple as Framer or Webflow. The
-catch is content management: Nikki and Stacy can't edit a Next.js app directly, so you'd
-pair it with a headless CMS — Sanity is the most common choice right now — which gives them
-a clean editing interface while you control the frontend. This is the most technically
-transferable option and the one where the design principles in this repo apply most
-directly. It's also the most involved build.
+**WordPress** — worth considering if content ownership is the dominant concern.
+The most accessible content editing experience of any platform. Stacy and Nikki may already
+know it. Plugin ecosystem handles most integration needs, though it often means more
+maintenance overhead and security surface area.
 
-The honest tradeoff: learning Next.js is harder than learning Framer or Webflow. Framer and
-Webflow are visual tools — a React developer can be productive in either within a day or
-two. Next.js is a real framework with its own mental model (server vs. client components,
-the App Router, data fetching patterns), and the ecosystem moves fast enough that a lot of
-documentation is out of date. Add a headless CMS on top and you've doubled the learning
-surface. With 10 weeks and a real client deadline, learning Next.js risks consuming the
-first few weeks of the engagement on infrastructure rather than Sentinel Security's actual
-site. Webflow is probably the better call for this engagement specifically — Next.js is the
-right choice for a course project with more runway and no client deadline.
+**Next.js + headless CMS** — the most technically transferable option, but probably not
+right for this engagement.
+You know React and Vite. Next.js is the step up most professional React teams take —
+server-side rendering, file-based routing, API routes, deployed on Vercel. Paired with a
+headless CMS like Sanity, non-technical users get a clean editing interface while you
+control the frontend. The design principles in `docs/design-decisions.md` apply directly
+here in a way they don't in a visual tool.
 
-**The key question to answer in discovery:** Can Nikki and Stacy comfortably manage content
-on whatever platform you choose? Ask them to try adding a blog post or updating a page
-during the discovery phase — before you commit to a platform — and watch what happens.
+The honest tradeoff: learning Next.js is harder than learning Webflow. Webflow is a visual
+tool — a React developer can be productive within a day or two. Next.js has its own mental
+model (server vs. client components, the App Router, data fetching patterns), and the
+ecosystem moves fast enough that documentation goes stale quickly. Add a headless CMS on
+top and you've doubled the learning surface. With 10 weeks and a real client deadline,
+learning Next.js risks consuming the first few weeks on infrastructure rather than
+Sentinel Security's actual site. Next.js is the right choice for a course project with more
+runway and no client deadline.
 
-For the rest of this document, the integration patterns apply regardless of which platform
-you choose. The boundary between the site and Make.com looks the same whether the site is
-built in Framer, Webflow, Next.js, or something else.
-
----
-
-## Framer: the frontend, CMS, and host in one
-
-Framer is a visual web development tool. If you've built React apps before, the mental model
-is: Framer is a React app where you work visually instead of writing JSX by hand. Under the
-hood it compiles to React. You can write custom code components in TypeScript/React when the
-visual editor isn't enough.
-
-What Framer handles for you:
-- Page layout and responsive design
-- A CMS for structured content (blog posts, case studies, team members)
-- Hosting and CDN — you publish directly from Framer, no deployment pipeline
-- Form components that can send data to external services via webhook
-
-What Framer does **not** handle:
-- Business logic or server-side processing
-- Persistent storage of form submissions (leads, access requests)
-- Sending emails, posting to LinkedIn, or updating a CRM
-
-That second list is where Make comes in.
+**Recommendation:** Webflow for this engagement. Confirm it with Stacy during discovery —
+ask her to try editing a page and adding a blog post before committing.
 
 ---
 
@@ -113,9 +96,9 @@ Slack, Gmail, and hundreds of others. You connect modules in a sequence to build
 **scenario**: when X happens, do Y, then Z.
 
 A scenario is triggered by an event. In this project, the trigger will almost always be a
-**webhook** — an HTTP POST that Framer sends to Make when a form is submitted or a post is
-published. Make receives the payload, runs the scenario, and does whatever you've configured:
-create a HubSpot contact, send a confirmation email, post to LinkedIn.
+**webhook** — an HTTP POST that the site sends to Make when a form is submitted. Make
+receives the payload, runs the scenario, and does whatever you've configured: create a CRM
+contact, send a confirmation email, notify Sentinel Security of a case study request.
 
 For a developer: Make is where you'd otherwise write glue code calling third-party APIs.
 You're not writing code, but you're making the same decisions — which fields to map, what
@@ -129,27 +112,27 @@ Make has a free tier with significant constraints. See `docs/free-tier.md` for d
 
 The cleanest way to think about this project:
 
-> **Framer owns the UI and the user experience. Make owns everything that crosses a system
+> **The site owns the UI and the user experience. Make owns everything that crosses a system
 > boundary.**
 
-Framer handles what the visitor sees and does. Make handles what happens in the background
-after they act. The connection point between them is a webhook URL — Framer sends, Make
+The site handles what the visitor sees and does. Make handles what happens in the background
+after they act. The connection point between them is a webhook URL — the site sends, Make
 receives.
 
 ```
 Visitor fills out contact form
         ↓
-Framer validates and submits
+Site validates and submits
         ↓
 Webhook POST → Make scenario
         ↓
-Make creates HubSpot contact + sends confirmation email
+Make creates CRM contact + sends confirmation email
 ```
 
 This boundary matters for a practical reason: **when requirements change, it determines
-what has to change with them.** If Sentinel Security switches from HubSpot to Salesforce,
-that's a Make reconfiguration — it doesn't touch Framer. If they want to change the form
-fields, that's a Framer change — it doesn't touch Make (as long as the field names in the
+what has to change with them.** If Sentinel Security chooses a CRM now and switches later,
+that's a Make reconfiguration — it doesn't touch the site. If they want to change the form
+fields, that's a site change — it doesn't touch Make (as long as the field names in the
 webhook payload stay consistent).
 
 ---
@@ -158,66 +141,83 @@ webhook payload stay consistent).
 
 ### 1. Where does the data live?
 
-Framer's CMS stores content — blog posts, case studies, page copy. But it does **not**
+The site's CMS stores content — blog posts, case studies, page copy. But it does **not**
 persistently store form submissions. When a visitor fills out the lead capture form, that
 data goes to Make via webhook. If Make is down or misconfigured, and you haven't set up a
 fallback (a Google Sheet, an Airtable, anything), that lead is gone.
 
 **The question to answer early:** Where is the system of record for leads and case study
-requests? HubSpot is the likely answer for leads. For case study requests, you may need a
-simple spreadsheet or Airtable as a backstop, because the approval workflow in Make depends
-on having somewhere to store the pending request.
+requests? The CRM decision is currently blocked — a new hire joining at end of April will
+have input on it. Don't finalize the lead capture integration until that decision is made.
+For case study requests, a simple Google Sheet as a backstop is worth setting up regardless
+of what CRM they choose.
 
 ### 2. Make can fail. The site should still work.
 
-Make is an external service your project doesn't control. It can be slow, down for
+Make is an external service the project doesn't control. It can be slow, down for
 maintenance, or misconfigured. If a visitor submits the contact form and Make is
-unreachable, what happens? If the answer is "they get an error page and their submission is
+unreachable, what happens? If the answer is "they get an error and their submission is
 lost," that's a problem.
 
-Framer's native form handling gives you some protection — it can show a success message
-optimistically before the webhook fires. But you should understand what actually happens to
-the data if the downstream Make scenario fails, and make sure there's a recovery path.
+Most platforms' native form handling can show a success message optimistically before the
+webhook fires. But you should understand what actually happens to the data if the downstream
+Make scenario fails, and make sure there's a recovery path.
 
 ### 3. Push and pull are both useful
 
-There are two ways to connect Framer to an external platform:
+There are two ways to connect the site to an external platform:
 
-**Push (webhook):** Framer initiates — when something happens, it immediately sends data to
-Make. This is what the lead form and case study request use. It's fast and event-driven, but
-it requires Make to be listening.
+**Push (webhook):** The site initiates — when something happens, it immediately sends data
+to Make. This is what the lead form and case study request use. Fast and event-driven, but
+requires Make to be listening.
 
-**Pull (RSS or polling):** The external platform polls Framer on a schedule. An RSS feed at
-a predictable URL is the simplest version of this. Newsletter platforms (Mailchimp,
-Buttondown, Substack) can drive a blog-to-email campaign by polling an RSS feed directly —
-no Make scenario required.
-
-For the blog, this is worth thinking through carefully — see the LinkedIn question below.
+**Pull (RSS or polling):** The external platform polls the site on a schedule. Newsletter
+platforms (Mailchimp, Buttondown, Substack) can drive a blog-to-email campaign by polling
+an RSS feed directly — no Make scenario required. Worth keeping in mind once Sentinel
+Security is ready to do email marketing.
 
 ---
 
 ## Open questions to resolve in discovery (Weeks 1-2)
 
-These are decisions that will shape the technical build. Get answers before you start
-designing scenarios.
+These are decisions that will shape the technical build. Several are currently blocked on
+Sentinel Security decisions.
 
-- **CRM:** HubSpot, Salesforce, or something else? This determines which Make modules you
-  use for lead capture.
-- **Video hosting:** Not yet decided. Options include Vimeo, Wistia, or a cloud storage
-  solution. The choice affects how the client-accessible archive works and who pays for it
-  (Sentinel Security covers recurring costs per the SOW).
-- **Case study gating:** Framer has some access control options, but they're limited. The
-  approval workflow (visitor requests → Sentinel reviews → access granted) may require a
-  third-party tool or a creative workaround. Worth prototyping early.
-- **LinkedIn — clarify the actual goal:** The SOW mentions "LinkedIn connectivity" but it's
-  worth understanding exactly what Sentinel Security needs before building anything. The most
-  likely scenario is that prospective clients find Sentinel Security on LinkedIn and click
-  through to the website — meaning the website is the problem to solve, not the LinkedIn
-  presence. Automatically pushing blog posts to LinkedIn is a separate feature with real
-  complexity (Make's LinkedIn integration has constraints around personal vs. company pages)
-  and questionable value if Sentinel Security is already posting manually. Ask Nikki in
-  discovery: are people finding you on LinkedIn but leaving the website? Or do you want to
-  post more content to LinkedIn with less effort? Those are different problems.
+- **Platform:** Webflow vs. alternatives. Confirm with Stacy by having her try the content
+  editing experience before committing.
+
+- **CRM:** No CRM in place yet. A new hire joining end of April will have strategy and
+  ideas. Don't build the lead capture integration until this is decided. In the meantime,
+  a Google Sheet via Make is a reasonable temporary backstop.
+
+- **LinkedIn — clarify the actual goal:** The SOW mentions "LinkedIn connectivity" but the
+  real goal may simply be a website good enough that LinkedIn visitors don't immediately
+  leave. Automatically pushing blog posts to LinkedIn is a separate, more complex feature.
+  Ask Nikki: are people finding you on LinkedIn but leaving the website? That's a design
+  problem. Or do you want to post more content to LinkedIn with less effort? That's an
+  automation problem. They're different.
+
+- **Video:** No videos exist yet. They do webinars on Teams/Zoom and want to capture and
+  archive them. Build the infrastructure, but don't expect content at launch. Video hosting
+  platform TBD — Vimeo and Wistia are the likely options; Sentinel Security covers recurring
+  costs per the SOW.
+
+- **Analytics:** Not using any. Adding basic analytics (Plausible or Google Analytics) is a
+  quick win and was explicitly called out as something they want.
+
+- **Privacy policy:** They have a draft. It needs to appear clearly on the site.
+
+- **Case study gating:** The approval workflow (visitor requests → Sentinel reviews → access
+  granted) is the most technically complex feature. Platform access control options vary
+  significantly — worth prototyping early to avoid a late-stage surprise.
+
+- **Content:** A company brochure is the primary source. Bios for core team members are
+  coming — new people joining end of April. Content delivery is Sentinel Security's
+  responsibility per the SOW, but the team should provide templates and structure early so
+  Sentinel Security knows what to write.
+
+- **Design reference:** Nikki mentioned Emergent Risk International as a site they like.
+  Worth reviewing before the kickoff meeting on April 30.
 
 ---
 
@@ -225,8 +225,9 @@ designing scenarios.
 
 | Topic | Resource |
 |---|---|
-| Framer CMS and components | [Framer documentation](https://www.framer.com/docs/) |
+| Webflow CMS and integrations | [Webflow University](https://university.webflow.com) |
 | Make.com scenarios and webhooks | [Make documentation](https://www.make.com/en/help) |
-| Three-stage architecture (Flask reference) | `docs/design-decisions.md` — the conceptual principles transfer even though the stack is different |
+| Integration principles (Flask reference) | `docs/design-decisions.md` — the conceptual principles transfer regardless of platform |
 | Make free tier constraints | `docs/free-tier.md` |
 | SOW | `docs/sow.pdf` |
+| Pre-kickoff meeting notes | `ee.md` |

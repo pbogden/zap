@@ -1,8 +1,9 @@
-# Project Orientation: Framer + Make.com
+# Project Orientation: Platform, Framer, and Make.com
 
 This document is for the student team building Sentinel Security's website, and for anyone
-coming into the project without prior experience with Framer or Make.com. It explains what
-these tools are, how they fit together, and where things can go wrong.
+coming into the project without prior experience with the tools involved. It explains what
+the platform options are, how Framer and Make.com fit together, and where things can go
+wrong.
 
 ---
 
@@ -16,8 +17,48 @@ things that a basic static site can't:
 3. **Gate case study access** — visitors request access, Sentinel Security reviews and approves
 4. **Host video** with a client-accessible archive
 
-You'll build this in **Framer**, using **Make.com** to handle the integrations. This
-document explains what that means in practice.
+After launch, **Nikki and Stacy at Sentinel Security will manage the site themselves** —
+adding blog posts, updating case studies, editing page copy — without developer help and
+without technical skills. That requirement shapes the platform choice more than anything
+else.
+
+---
+
+## The platform decision
+
+The SOW names Framer as the default platform but leaves the door open for an alternative to
+be chosen during discovery. This is a real decision worth making carefully, because the
+existing Framer site is in poor shape and neither Nikki nor Stacy has the technical
+familiarity to maintain it. Staying on Framer is not a given.
+
+The realistic options are:
+
+**Framer**
+A visual web development tool built on React. Strong for design-led builds; the CMS works
+but the content editing experience for non-technical users is not its strength. The existing
+site is on Framer, but that's not a compelling reason to stay — the site needs to be
+rebuilt regardless.
+
+**Webflow**
+The closest alternative to Framer, with a significantly better CMS and content editor.
+Non-technical users can add blog posts, update pages, and manage collections without
+touching the visual editor. The integration story is similar to Framer — Make.com connects
+to Webflow via webhooks. Widely used for exactly this kind of professional marketing site.
+Webflow is the most likely alternative if Framer is ruled out.
+
+**WordPress**
+The most accessible content editing experience of any platform — Nikki and Stacy may
+already be familiar with it. Plugin ecosystem handles most integration needs, though it
+often means more maintenance overhead. Worth considering if content ownership is the
+primary concern and the team is comfortable with the tradeoffs.
+
+**The key question to answer in discovery:** Can Nikki and Stacy comfortably manage content
+on whatever platform you choose? Ask them to try adding a blog post or updating a page
+during the discovery phase — before you commit to a platform — and watch what happens.
+
+For the rest of this document, the integration patterns apply regardless of which platform
+you choose. The boundary between the site and Make.com looks the same whether the site is
+built in Framer, Webflow, or something else.
 
 ---
 

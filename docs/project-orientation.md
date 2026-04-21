@@ -53,13 +53,33 @@ already be familiar with it. Plugin ecosystem handles most integration needs, th
 often means more maintenance overhead. Worth considering if content ownership is the
 primary concern and the team is comfortable with the tradeoffs.
 
+**Next.js + headless CMS**
+You know React and Vite. Next.js is React with server-side rendering, file-based routing,
+and API routes built in — the step up from Vite that most professional React teams take.
+Vercel (the company behind Next.js) makes deployment as simple as Framer or Webflow. The
+catch is content management: Nikki and Stacy can't edit a Next.js app directly, so you'd
+pair it with a headless CMS — Sanity is the most common choice right now — which gives them
+a clean editing interface while you control the frontend. This is the most technically
+transferable option and the one where the design principles in this repo apply most
+directly. It's also the most involved build.
+
+The honest tradeoff: learning Next.js is harder than learning Framer or Webflow. Framer and
+Webflow are visual tools — a React developer can be productive in either within a day or
+two. Next.js is a real framework with its own mental model (server vs. client components,
+the App Router, data fetching patterns), and the ecosystem moves fast enough that a lot of
+documentation is out of date. Add a headless CMS on top and you've doubled the learning
+surface. With 10 weeks and a real client deadline, learning Next.js risks consuming the
+first few weeks of the engagement on infrastructure rather than Sentinel Security's actual
+site. Webflow is probably the better call for this engagement specifically — Next.js is the
+right choice for a course project with more runway and no client deadline.
+
 **The key question to answer in discovery:** Can Nikki and Stacy comfortably manage content
 on whatever platform you choose? Ask them to try adding a blog post or updating a page
 during the discovery phase — before you commit to a platform — and watch what happens.
 
 For the rest of this document, the integration patterns apply regardless of which platform
 you choose. The boundary between the site and Make.com looks the same whether the site is
-built in Framer, Webflow, or something else.
+built in Framer, Webflow, Next.js, or something else.
 
 ---
 

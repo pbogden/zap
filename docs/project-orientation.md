@@ -5,7 +5,7 @@ coming into the project without prior experience with the tools involved. It exp
 the platform options are, how the site and Make.com fit together, and where things can go
 wrong.
 
-*Updated April 21, 2026 based on pre-kickoff meeting notes (see `ee.md`).*
+*Updated April 21, 2026 based on pre-kickoff meeting notes.*
 
 ---
 

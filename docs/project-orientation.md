@@ -5,7 +5,7 @@ coming into the project without prior experience with the tools involved. It exp
 the platform options are, how the site and Make.com fit together, and where things can go
 wrong.
 
-*Updated April 21, 2026 based on pre-kickoff meeting notes.*
+*Updated April 21, 2026 based on pre-kickoff meeting notes and current platform research.*
 
 ---
 
@@ -49,64 +49,98 @@ they reflect real limitations in how Framer was used here.
 
 The site needs to be rebuilt regardless. The question is what to rebuild it in.
 
-**Webflow** — the most likely choice for this engagement.
+**Webflow** — the recommended choice for this engagement.
 The closest alternative to Framer, with a significantly better CMS and content editor.
 Non-technical users can add blog posts, update pages, and manage structured content without
-touching the visual editor. The integration story is the same as Framer — Make.com connects
-via webhooks. Widely used for exactly this kind of professional marketing site. A React
-developer can be productive in Webflow within a day or two; the learning curve is UI
-conventions, not new concepts.
+touching the visual editor. A React developer can be productive in Webflow within a day or
+two; the learning curve is UI conventions, not new concepts.
 
-**Framer** — probably not the right choice here.
-Strong for design-led builds, but the content editing experience for non-technical users is
-not its strength, and the existing site is evidence of how Framer builds can become
-unmanageable without developer involvement. Not recommended unless there's a specific reason
-to revisit.
+The Make.com integration is native and well-supported — Make has an official Webflow
+integration with 40 modules covering forms, CMS, and site events. One gotcha: creating or
+updating a CMS item through Make does not automatically publish it to the live site; you
+need an explicit publish step in your scenario.
 
-**WordPress** — worth considering if content ownership is the dominant concern.
-The most accessible content editing experience of any platform. Stacy and Nikki may already
-know it. Plugin ecosystem handles most integration needs, though it often means more
-maintenance overhead and security surface area.
+For analytics, Webflow now offers a built-in privacy-friendly analytics add-on ($9/mo) that
+requires no third-party setup — relevant given that Sentinel Security currently has no
+visibility into site traffic. The CMS plan ($23/mo billed annually) supports 2,000 CMS
+items, which is more than sufficient.
 
-**Next.js + headless CMS** — the most technically transferable option, but probably not
-right for this engagement.
+**Ghost** — worth knowing about, but a narrower fit.
+Ghost is a publishing platform built specifically for content-first sites, with newsletter
+and email list functionality built in. The editor is excellent, Ghost Pro handles hosting,
+and pricing starts at $15/mo. Ghost 6.0 (August 2025) added ActivityPub syndication for
+decentralized social distribution. The limitation is that it's a publishing platform first —
+custom page layouts, multiple content types (case studies, team bios, video archive), and
+marketing-focused design are more constrained than Webflow. If the blog and newsletter
+become the dominant use case, Ghost is worth a second look. For a full marketing site with
+multiple page types, Webflow is the better fit.
+
+**Framer** — ruled out based on Stacy's direct experience.
+The existing site deteriorated because Framer builds can become unmanageable without ongoing
+developer involvement. Not the right tool for a team that needs to own the site after
+handoff.
+
+**WordPress** — not recommended for this project.
+Still the most widely deployed CMS on the web, but increasingly the wrong choice for new
+professional builds. For a student team that knows React, it means learning a PHP ecosystem
+without transferable skills. More importantly: a WordPress site with unpatched plugins is a
+real security liability — a particularly awkward choice for a security consulting firm.
+
+**Next.js + headless CMS** — the most technically transferable option, but not right for
+this engagement.
 You know React and Vite. Next.js is the step up most professional React teams take —
 server-side rendering, file-based routing, API routes, deployed on Vercel. Paired with a
 headless CMS like Sanity, non-technical users get a clean editing interface while you
 control the frontend. The design principles in `docs/design-decisions.md` apply directly
 here in a way they don't in a visual tool.
 
-The honest tradeoff: learning Next.js is harder than learning Webflow. Webflow is a visual
-tool — a React developer can be productive within a day or two. Next.js has its own mental
-model (server vs. client components, the App Router, data fetching patterns), and the
-ecosystem moves fast enough that documentation goes stale quickly. Add a headless CMS on
-top and you've doubled the learning surface. With 10 weeks and a real client deadline,
-learning Next.js risks consuming the first few weeks on infrastructure rather than
-Sentinel Security's actual site. Next.js is the right choice for a course project with more
-runway and no client deadline.
+The honest tradeoff: Next.js has its own mental model (server vs. client components, the
+App Router, data fetching patterns), and the ecosystem moves fast enough that documentation
+goes stale quickly. Add a headless CMS on top and you've doubled the learning surface. With
+10 weeks and a real client deadline, learning Next.js risks consuming the first few weeks on
+infrastructure rather than Sentinel Security's actual site. Next.js is the right choice for
+a course project with more runway and no client deadline.
 
 **Recommendation:** Webflow for this engagement. Confirm it with Stacy during discovery —
 ask her to try editing a page and adding a blog post before committing.
 
 ---
 
-## Make.com: visual integration plumbing
+## Automation: do you actually need Make?
 
-Make.com is a workflow automation platform. Think of it as a visual programming environment
-where each "module" is a pre-built connector to an external service — LinkedIn, HubSpot,
-Slack, Gmail, and hundreds of others. You connect modules in a sequence to build a
-**scenario**: when X happens, do Y, then Z.
+The Flask teaching demo in this repo uses Make.com extensively, but that's a pedagogical
+choice, not a project requirement. For the actual Sentinel Security site, the honest
+answer is: start with native integrations and only add an automation layer when you
+need one.
 
-A scenario is triggered by an event. In this project, the trigger will almost always be a
-**webhook** — an HTTP POST that the site sends to Make when a form is submitted. Make
-receives the payload, runs the scenario, and does whatever you've configured: create a CRM
-contact, send a confirmation email, notify Sentinel Security of a case study request.
+**What Webflow handles natively, no automation tool required:**
+- Form submissions are stored in the Webflow dashboard and trigger email notifications
+  out of the box — leads aren't lost even if nothing else is configured
+- HubSpot has an official certified app in the Webflow Marketplace that maps form fields
+  directly to HubSpot contacts with no code and no third-party service
+- Mailchimp and several other email list tools have similar native integrations
 
-For a developer: Make is where you'd otherwise write glue code calling third-party APIs.
-You're not writing code, but you're making the same decisions — which fields to map, what
-to do on failure, what order operations run in.
+**When you do need an automation layer:**
+The case study approval workflow is the one feature that genuinely benefits from automation
+— a visitor requests access, Sentinel Security receives a notification, reviews the request,
+and a conditional email goes out based on their decision. That multi-step conditional flow
+is where a tool like Make or Zapier earns its keep.
 
-Make has a free tier with significant constraints. See `docs/free-tier.md` for details.
+**Make vs. Zapier:**
+If you do need an automation layer, Zapier is the better choice for this project. It's
+simpler for beginners, has guided setup, and connects to 8,000+ apps. Make is more powerful
+for complex multi-branch scenarios but has a steeper learning curve and a free tier that's
+easy to exhaust. For a student team new to both tools, Zapier gets you to a working scenario
+faster. The conceptual patterns — webhooks, payloads, conditional logic — are the same in
+either tool.
+
+**Recommended approach:**
+1. Launch with native Webflow form handling — submissions go to the dashboard, email
+   notifications go to Stacy or the new hire
+2. Add the HubSpot native integration once the CRM decision is made
+3. Use Zapier only for the case study approval workflow, which needs conditional logic that
+   native integrations can't handle
+4. Revisit Make if scenarios grow complex enough to justify it
 
 ---
 
@@ -114,28 +148,27 @@ Make has a free tier with significant constraints. See `docs/free-tier.md` for d
 
 The cleanest way to think about this project:
 
-> **The site owns the UI and the user experience. Make owns everything that crosses a system
-> boundary.**
+> **The site owns the UI and the user experience. External services own everything that
+> crosses a system boundary.**
 
-The site handles what the visitor sees and does. Make handles what happens in the background
-after they act. The connection point between them is a webhook URL — the site sends, Make
-receives.
+The site handles what the visitor sees and does. Everything else — CRM updates, emails,
+notifications, approval workflows — happens outside it. How that handoff works depends on
+which integration approach you use:
 
 ```
 Visitor fills out contact form
         ↓
-Site validates and submits
-        ↓
-Webhook POST → Make scenario
-        ↓
-Make creates CRM contact + sends confirmation email
+Webflow stores submission + sends email notification   ← native, no extra tool
+        ↓ (if HubSpot chosen)
+HubSpot native app syncs contact to CRM               ← native, no extra tool
+        ↓ (for case study approval)
+Zapier scenario: notify → review → conditional email  ← automation layer needed here
 ```
 
 This boundary matters for a practical reason: **when requirements change, it determines
-what has to change with them.** If Sentinel Security chooses a CRM now and switches later,
-that's a Make reconfiguration — it doesn't touch the site. If they want to change the form
-fields, that's a site change — it doesn't touch Make (as long as the field names in the
-webhook payload stay consistent).
+what has to change with them.** If Sentinel Security switches CRMs, that's an integration
+change — it doesn't touch the site. If they want to change the form fields, that's a site
+change — it doesn't touch the integrations (as long as field names stay consistent).
 
 ---
 
@@ -206,8 +239,10 @@ Sentinel Security decisions.
   platform TBD — Vimeo and Wistia are the likely options; Sentinel Security covers recurring
   costs per the SOW.
 
-- **Analytics:** Not using any. Adding basic analytics (Plausible or Google Analytics) is a
-  quick win and was explicitly called out as something they want.
+- **Analytics:** Not using any. If you go with Webflow, the built-in Analyze add-on ($9/mo)
+  is the simplest path — privacy-friendly, no third-party setup, cookieless. Otherwise
+  Plausible is a clean lightweight option. Either way this is a quick win and was explicitly
+  called out as something they want.
 
 - **Privacy policy:** They have a draft. It needs to appear clearly on the site.
 

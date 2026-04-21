@@ -31,9 +31,11 @@ The site needs to do several things a basic static site can't:
 videos. The content exists in a brochure and in people's heads, but hasn't been organized
 for the web.
 
-**Who manages the site after handoff:** This is an open question. Stacy is the operational
-contact and the person most likely to touch the site day-to-day, but she struggled with the
-existing Framer site. The platform choice needs to be something she can actually use.
+**Who manages the site after handoff:** A new hire joining at end of April will likely own
+the site and the CRM strategy going forward. This is an important person to meet at or
+before the kickoff — they may have strong opinions about platform and tooling, and building
+something they can't or won't use would be a problem. Stacy is the current operational
+contact and will handle technical access and approvals in the meantime.
 
 ---
 
@@ -186,9 +188,11 @@ Sentinel Security decisions.
 - **Platform:** Webflow vs. alternatives. Confirm with Stacy by having her try the content
   editing experience before committing.
 
-- **CRM:** No CRM in place yet. A new hire joining end of April will have strategy and
-  ideas. Don't build the lead capture integration until this is decided. In the meantime,
-  a Google Sheet via Make is a reasonable temporary backstop.
+- **CRM and new hire:** No CRM in place yet. A new hire joining end of April will own the
+  CRM strategy and likely the site itself. Try to have them at the kickoff on April 30 or
+  loop them in immediately after. Don't finalize the lead capture integration until they've
+  weighed in — building to the wrong CRM wastes time. A Google Sheet via Make is a
+  reasonable temporary backstop while the decision is pending.
 
 - **LinkedIn — clarify the actual goal:** The SOW mentions "LinkedIn connectivity" but the
   real goal may simply be a website good enough that LinkedIn visitors don't immediately

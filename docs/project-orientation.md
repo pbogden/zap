@@ -12,10 +12,11 @@ wrong.
 A modernized marketing website for a security consulting firm. The site needs to do four
 things that a basic static site can't:
 
-1. **Publish blog posts** that flow automatically to LinkedIn
+1. **Convert LinkedIn visitors** — prospective clients discover Sentinel Security on LinkedIn and click through; the website needs to be good enough that they don't immediately leave
 2. **Capture leads** from a contact form and route them to a CRM (HubSpot or equivalent)
 3. **Gate case study access** — visitors request access, Sentinel Security reviews and approves
 4. **Host video** with a client-accessible archive
+5. **Support content marketing** — a blog gives visitors something substantive to read and a reason to return; it also gives Sentinel Security material to share manually on LinkedIn
 
 After launch, **Nikki and Stacy at Sentinel Security will manage the site themselves** —
 adding blog posts, updating case studies, editing page copy — without developer help and
@@ -171,9 +172,7 @@ a predictable URL is the simplest version of this. Newsletter platforms (Mailchi
 Buttondown, Substack) can drive a blog-to-email campaign by polling an RSS feed directly —
 no Make scenario required.
 
-For the blog/LinkedIn integration, both approaches are worth considering. A webhook to Make
-is immediate but requires a working scenario. An RSS feed is simpler, more durable, and
-compatible with tools Sentinel Security might already use.
+For the blog, this is worth thinking through carefully — see the LinkedIn question below.
 
 ---
 
@@ -190,8 +189,15 @@ designing scenarios.
 - **Case study gating:** Framer has some access control options, but they're limited. The
   approval workflow (visitor requests → Sentinel reviews → access granted) may require a
   third-party tool or a creative workaround. Worth prototyping early.
-- **LinkedIn posting:** Make's LinkedIn integration has constraints around personal vs.
-  company page posting. See `docs/free-tier.md`.
+- **LinkedIn — clarify the actual goal:** The SOW mentions "LinkedIn connectivity" but it's
+  worth understanding exactly what Sentinel Security needs before building anything. The most
+  likely scenario is that prospective clients find Sentinel Security on LinkedIn and click
+  through to the website — meaning the website is the problem to solve, not the LinkedIn
+  presence. Automatically pushing blog posts to LinkedIn is a separate feature with real
+  complexity (Make's LinkedIn integration has constraints around personal vs. company pages)
+  and questionable value if Sentinel Security is already posting manually. Ask Nikki in
+  discovery: are people finding you on LinkedIn but leaving the website? Or do you want to
+  post more content to LinkedIn with less effort? Those are different problems.
 
 ---
 

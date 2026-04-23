@@ -12,6 +12,18 @@ A teaching demo that extends the [Flask Flaskr tutorial](https://flask.palletspr
 
 The demo uses the Sentinel Security engagement as its scenario. The patterns it illustrates — not the specific tools — are what carry forward into the actual project.
 
+### Why Make?
+
+You could call the LinkedIn and HubSpot APIs directly from Flask — but each one adds an SDK to install, credentials to manage, an API contract to track, and a new way for your app to break when a third-party service goes down or changes its auth flow. Multiply that across a few integrations and the app starts spending more time managing external services than serving users.
+
+Make draws a hard boundary. Flask does one thing (data + UX), Make does another (integrations). The benefits:
+
+- **Reliability** — a Make outage doesn't take down your app; a failed webhook is logged and skipped, not a 500
+- **Changeability** — the Sentinel team can rewire the LinkedIn post format or swap HubSpot for a new CRM without touching Flask code or doing a deploy
+- **Visibility** — non-engineers can open Make and see exactly what happens when a lead form is submitted; that's not true of Python code buried in a route handler
+
+The tradeoff is that Make is now a dependency. The demo treats it like one: timeouts, exception handling, and a `webhook_fired` column in the DB so you always know whether Make was notified.
+
 ### Three stages
 
 | Stage | Flask adds | Make does | Pattern illustrated |

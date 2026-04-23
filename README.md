@@ -65,6 +65,8 @@ Visitors can request access to gated case studies. Make routes the request to th
 **New code:** `flaskr/case_studies.py`, `flaskr/templates/case_studies/`  
 **Make setup:** [docs/stage3.md](docs/stage3.md) — export blueprint to `make_scenarios/stage3_case_study_approval/` once built
 
+**Limitation:** The case study list is seeded directly in the DB. There's no admin UI, so adding or retiring a case study requires a code change. For a real handoff, the client needs either a simple admin interface or a platform with a built-in CMS.
+
 ### Why these patterns matter regardless of stack
 
 The Flask demo is simple enough that the patterns are visible. But they apply in any stack:
@@ -117,7 +119,7 @@ The Roux Institute is building a modernized website for Sentinel Security under 
 
 ### Key decisions still open
 
-- **Platform:** Next.js + Sanity vs. Webflow — confirm during discovery
+- **Platform:** Next.js + Sanity vs. Webflow — confirm during discovery. The Flask demo exposes a real constraint: without a CMS, the client can't add blog posts, update case studies, or change page copy without a developer. Both Sanity and Webflow solve this; plain Next.js without a CMS does not.
 - **CRM:** No CRM in place yet; new hire joining end of April will drive this decision
 - **Who owns the site post-handoff:** The new hire, not Stacy — get them to the kickoff
 

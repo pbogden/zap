@@ -24,6 +24,16 @@ The demo uses the Sentinel Security engagement as its scenario. The patterns it 
 
 All three stages use the same approach: Flask writes to the database first, then fires a webhook to Make. Make handles everything that crosses a system boundary — LinkedIn, HubSpot, email. Flask never imports a LinkedIn or HubSpot SDK.
 
+```
+Flask app                Make                    External services
+─────────────────────────────────────────────────────────────────
+POST /webhook  ──────►  Custom Webhook  ──────►  Slack
+  { payload }            Trigger         ├──────►  LinkedIn
+                                         └──────►  HubSpot / Email
+```
+
+The `make_webhook.py` utility is fire-and-forget: 5-second timeout, catches all exceptions, returns a bool. The app never crashes because Make is unreachable.
+
 ### Stage 1 — Blog Post → Make → Slack + LinkedIn
 When a post is published, Flask fires a webhook to Make. Make cross-posts to LinkedIn and sends a Slack notification. `blog.py` also serves a `/feed` RSS route as a pull-model alternative.
 
@@ -42,35 +52,28 @@ Visitors can request access to gated case studies. Make routes the request to th
 **New code:** `flaskr/case_studies.py`, `flaskr/templates/case_studies/`  
 **Make setup:** [docs/stage3.md](docs/stage3.md) — export blueprint to `make_scenarios/stage3_case_study_approval/` once built
 
+### Why these patterns matter regardless of stack
+
+The Flask demo is simple enough that the patterns are visible. But they apply in any stack:
+
+- **DB-first before any external call** — whether you're in Flask, Next.js, or anything else, write to your own datastore before notifying an external service
+- **The app owns data and UX; external services own integrations** — this boundary holds whether the "app" is Flask, Webflow, or Next.js, and whether the integration layer is Make, Zapier, or direct API calls
+- **Treat external services as unreliable** — timeout, catch exceptions, log failures, have a fallback
+
+See [docs/design-decisions.md](docs/design-decisions.md) for the full rationale with historical and modern context.
+
 ---
 
 ## Quickstart
 
-### 1. Clone and install
-=======
-```
-Flask app                Make                    External services
-─────────────────────────────────────────────────────────────────
-POST /webhook  ──────►  Custom Webhook  ──────►  Slack
-  { payload }            Trigger         ├──────►  LinkedIn
-                                         └──────►  HubSpot / Email
-```
-
-The `make_webhook.py` utility is fire-and-forget: 5-second timeout, catches all exceptions, returns a bool. The app never crashes because Make is unreachable.
-
-### Quickstart
-
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-<<<<<<< HEAD
 ```
 
-### 2. Configure environment
+Create a `.env` file with your Make webhook URLs (the app runs fine without them — webhook calls are silently skipped if a URL isn't set):
 
-Create a `.env` file and add your Make webhook URLs. The app runs fine without them — webhook calls are silently skipped if a URL isn't set.
-
-```bash
+```
 SECRET_KEY=change-me
 MAKE_WEBHOOK_BLOG_POST=
 MAKE_WEBHOOK_LEAD_CAPTURE=
@@ -78,61 +81,12 @@ MAKE_WEBHOOK_CASE_STUDY_REQUEST=
 SENTINEL_REVIEW_EMAIL=
 ```
 
-See the [Environment Variables](#environment-variables) table below for details on each.
-
-### 3. Initialize the database and run
-
 ```bash
-=======
-cp .env.example .env          # add Make webhook URLs — app runs fine without them
->>>>>>> 3bd76a6103b648882213b540e7eb80b65e1a0473
 flask --app flaskr init-db
 flask --app flaskr run --debug
 ```
 
 Visit `http://localhost:5000`. Register an account to create posts and test the forms.
-
-### Why these patterns matter regardless of stack
-
-The Flask demo is simple enough that the patterns are visible. But they apply in any stack:
-
-<<<<<<< HEAD
-```
-sentinel-flaskr-demo/
-├── flaskr/
-│   ├── __init__.py          # App factory — registers all blueprints
-│   ├── db.py                # Database connection helpers
-│   ├── schema.sql           # Tables: user, post, lead, case_study, case_study_request
-│   ├── auth.py              # Register / login / logout (Flaskr, unchanged)
-│   ├── blog.py              # Post CRUD + Stage 1 webhook call + /feed RSS
-│   ├── leads.py             # Stage 2: lead capture form
-│   ├── case_studies.py      # Stage 3: gated case study requests
-│   ├── make_webhook.py      # Shared webhook utility used by all stages
-│   └── templates/
-│       ├── base.html
-│       ├── auth/
-│       ├── blog/
-│       ├── leads/
-│       └── case_studies/
-├── make_scenarios/
-│   └── README.md            # Blueprint export/import instructions (blueprints added once built)
-├── docs/
-│   ├── design-decisions.md  # Architectural principles behind the demo
-│   ├── free-tier.md         # Make free plan constraints and workarounds
-│   ├── sow-mapping.md       # How each stage maps to the Sentinel SOW
-│   ├── stage1.md            # Stage 1 Make setup walkthrough
-│   ├── stage2.md            # Stage 2 Make setup walkthrough
-│   └── stage3.md            # Stage 3 Make setup walkthrough
-├── framer-demo/             # Same Stage 2 outcome, zero backend
-└── requirements.txt
-```
-=======
-- **DB-first before any external call** — whether you're in Flask, Next.js, or anything else, write to your own datastore before notifying an external service
-- **The app owns data and UX; external services own integrations** — this boundary holds whether the "app" is Flask, Webflow, or Next.js, and whether the integration layer is Make, Zapier, or direct API calls
-- **Treat external services as unreliable** — timeout, catch exceptions, log failures, have a fallback
-
-See [docs/design-decisions.md](docs/design-decisions.md) for the full rationale with historical and modern context.
->>>>>>> 3bd76a6103b648882213b540e7eb80b65e1a0473
 
 ---
 

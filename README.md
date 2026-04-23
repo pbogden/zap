@@ -14,11 +14,16 @@ The demo uses the Sentinel Security engagement as its scenario. The patterns it 
 
 ### Why Make?
 
-Make is most clearly justified for **Stage 3** — a human-in-the-loop approval workflow with conditional branching is genuinely awkward to implement in Flask. You'd be writing a state machine. Routing it through Make is the simpler choice.
+The pattern the demo is teaching — draw a boundary between your app and its integrations, 
+treat external services as unreliable, write to the DB before firing any webhook — applies 
+whether the integration layer is Make, Zapier, direct API calls, or a queue. 
+
+Make is one answer to the problem, not the only one.
+Make is most clearly justified for **Stage 3** — a human-in-the-loop approval workflow with 
+conditional branching is genuinely awkward to implement in Flask. 
+You'd be writing a state machine (requests need states like `pending`, `approved`, `declined`; routes for a reviewer to trigger transitions; and the right email wired to each outcome). Routing it through Make is the simpler choice.
 
 Stages 1 and 2 are more debatable. `requests` is already a dependency, so a Slack notification or HubSpot contact creation is a single `requests.post`. The real question isn't "fewer packages" — it's **who owns the integration logic after handoff**. If the Sentinel team (not a developer) needs to change what happens when a lead comes in — swap the CRM, add an approval step, change the email copy — Make lets them do that without a code change or deploy. If a developer will always make those changes anyway, Make's value shrinks and the added complexity (external service, account, scenario management) becomes harder to justify.
-
-The pattern the demo is teaching — draw a boundary between your app and its integrations, treat external services as unreliable, write to the DB before firing any webhook — applies whether the integration layer is Make, Zapier, direct API calls, or a queue. Make is one answer to the problem, not the only one.
 
 ### Three stages
 

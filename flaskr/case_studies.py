@@ -7,7 +7,7 @@ request access to the full PDF.
 When a request is submitted, we:
   1. Save the request to the database with status='pending'
   2. Fire a webhook to Make, which runs an approval workflow:
-       - Emails the Sentinel team with the request details and two buttons:
+       - Emails the reviewer with the request details and two buttons:
          [Approve] / [Decline]
        - If approved: Make sends the requester an email with the download link
        - If declined: Make sends a polite decline email

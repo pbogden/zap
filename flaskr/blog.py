@@ -195,9 +195,9 @@ def feed():
     rss = f"""<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Sentinel Security Blog</title>
+    <title>Blog</title>
     <link>{site_url}</link>
-    <description>Security insights from Sentinel Security</description>
+    <description>Recent posts</description>
     <language>en-us</language>
     <atom:link href="{feed_url}" rel="self" type="application/rss+xml"
                xmlns:atom="http://www.w3.org/2005/Atom"/>

@@ -1,14 +1,14 @@
 """
 leads.py  —  Stage 2
 ---------------------
-Lead capture form for the Sentinel Security site.
+Lead capture form — Stage 2.
 
 When a visitor submits the contact form, we:
   1. Save the lead to the database (so we have a record regardless of Make)
   2. Fire a webhook to Make, which:
        - Creates a contact in HubSpot (or equivalent CRM)
        - Sends a confirmation email to the prospect
-       - Notifies the Sentinel team on Slack
+       - Notifies the team on Slack
 
 The separation is intentional: the DB write and the webhook are independent.
 If Make is down, the lead is still saved. This is a good pattern to discuss

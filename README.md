@@ -14,15 +14,11 @@ The demo uses the Sentinel Security engagement as its scenario. The patterns it 
 
 ### Why Make?
 
-You could call the LinkedIn and HubSpot APIs directly from Flask — but each one adds an SDK to install, credentials to manage, an API contract to track, and a new way for your app to break when a third-party service goes down or changes its auth flow. Multiply that across a few integrations and the app starts spending more time managing external services than serving users.
+Make is most clearly justified for **Stage 3** — a human-in-the-loop approval workflow with conditional branching is genuinely awkward to implement in Flask. You'd be writing a state machine. Routing it through Make is the simpler choice.
 
-Make draws a hard boundary. Flask does one thing (data + UX), Make does another (integrations). The benefits:
+Stages 1 and 2 are more debatable. `requests` is already a dependency, so a Slack notification or HubSpot contact creation is a single `requests.post`. The real question isn't "fewer packages" — it's **who owns the integration logic after handoff**. If the Sentinel team (not a developer) needs to change what happens when a lead comes in — swap the CRM, add an approval step, change the email copy — Make lets them do that without a code change or deploy. If a developer will always make those changes anyway, Make's value shrinks and the added complexity (external service, account, scenario management) becomes harder to justify.
 
-- **Reliability** — a Make outage doesn't take down your app; a failed webhook is logged and skipped, not a 500
-- **Changeability** — the Sentinel team can rewire the LinkedIn post format or swap HubSpot for a new CRM without touching Flask code or doing a deploy
-- **Visibility** — non-engineers can open Make and see exactly what happens when a lead form is submitted; that's not true of Python code buried in a route handler
-
-The tradeoff is that Make is now a dependency. The demo treats it like one: timeouts, exception handling, and a `webhook_fired` column in the DB so you always know whether Make was notified.
+The pattern the demo is teaching — draw a boundary between your app and its integrations, treat external services as unreliable, write to the DB before firing any webhook — applies whether the integration layer is Make, Zapier, direct API calls, or a queue. Make is one answer to the problem, not the only one.
 
 ### Three stages
 

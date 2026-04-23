@@ -24,7 +24,6 @@ The demo uses the Sentinel Security engagement as its scenario. The patterns it 
 
 All three stages use the same approach: Flask writes to the database first, then fires a webhook to Make. Make handles everything that crosses a system boundary — LinkedIn, HubSpot, email. Flask never imports a LinkedIn or HubSpot SDK.
 
-<<<<<<< HEAD
 ### Stage 1 — Blog Post → Make → Slack + LinkedIn
 When a post is published, Flask fires a webhook to Make. Make cross-posts to LinkedIn and sends a Slack notification. `blog.py` also serves a `/feed` RSS route as a pull-model alternative.
 
@@ -60,7 +59,6 @@ POST /webhook  ──────►  Custom Webhook  ──────►  Sla
 The `make_webhook.py` utility is fire-and-forget: 5-second timeout, catches all exceptions, returns a bool. The app never crashes because Make is unreachable.
 
 ### Quickstart
->>>>>>> 3bd76a6103b648882213b540e7eb80b65e1a0473
 
 ```bash
 python -m venv .venv && source .venv/bin/activate

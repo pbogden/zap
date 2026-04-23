@@ -8,6 +8,21 @@ A **teaching demo** that extends the [Flask Flaskr tutorial](https://flask.palle
 
 The repo is currently **documentation and reference code only** — the actual Flask app has not been scaffolded yet. The `docs/` folder contains the reference Python files (`blog.py`, `leads.py`, `case_studies.py`, `make_webhook.py`, `schema.sql`) that will become the app.
 
+## Engagement Context
+
+This repo is a **teaching artifact** that uses a real client engagement as its scenario — not direct preparation for that engagement.
+
+The actual project (SOW No. 26345, March 25, 2026) is a 10-week engagement in which a two-student Roux Institute team builds a modernized website for Sentinel Security, beginning May 1, 2026. The deliverable is a live website, almost certainly built in Framer — the existing site is Framer-based and the SOW names it as the default platform. The students won't write Flask blueprints or SQLite schemas for Sentinel Security.
+
+**What this repo uses from the engagement:** The three SOW features — blog/LinkedIn integration, lead capture + CRM, gated case studies — provide a realistic, grounded scenario for the Flask + Make demo. The scenario makes the patterns concrete. But the demo stands on its own as a teaching artifact; its relevance to what the students will actually build in Framer is indirect.
+
+**Concepts from this repo that do transfer to the Framer build:**
+- The boundary between the app and Make (Principle 2)
+- Push vs. pull, and when to use each (Principle 3)
+- Treating external services as unreliable (Principle 4)
+
+The SOW is at `docs/sow.pdf`.
+
 ## Intended Project Structure (once scaffolded)
 
 ```

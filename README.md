@@ -1,33 +1,30 @@
-# Sentinel Security Demo — Flaskr + Make.com
+# Sentinel Security — Course Demo and Project Prep
 
-A teaching demo that extends the [Flask Flaskr tutorial](https://flask.palletsprojects.com/en/stable/tutorial/) with real-world automation using [Make.com](https://make.com). Each stage maps directly to a deliverable in the [Sentinel Security SOW](docs/sow-mapping.md).
-
----
-
-## Why This Exists
-
-The Flaskr tutorial teaches you Flask. This repo shows you what happens *after* — when a real client needs their app connected to LinkedIn, a CRM, and an approval workflow. The three stages below are the gap between "I finished the tutorial" and "this is production-ready."
-
-| Flaskr feature | SOW deliverable | Extended by |
-|---|---|---|
-| Blog (create/read/edit) | Blog/newsletter section | Stage 1 |
-| Auth (register/login) | Gated access | Stage 3 |
-| Forms + validation | Lead capture | Stage 2 |
-| SQLite DB | Data foundation | All stages |
+This repo serves two related purposes for the Roux Institute web development course and the Sentinel Security client engagement.
 
 ---
 
-## Make.com Free Plan
+## Part 1: Flask + Make.com Teaching Demo
 
-This demo runs on Make's free plan for an instructor-led walkthrough. The only
-constraint is a 2-active-scenario limit — Stage 3 requires 3 scenarios, so you'll
-swap them in and out as you move through the stages. See [docs/free-tier.md](docs/free-tier.md)
-for the full rundown, including the LinkedIn workaround and how to handle RSS polling.
+*Course material — Weeks 3–4 of the web dev curriculum.*
 
----
+A teaching demo that extends the [Flask Flaskr tutorial](https://flask.palletsprojects.com/en/stable/tutorial/) with real-world automation using [Make.com](https://make.com). The Flaskr tutorial teaches you Flask. This shows what happens after — when a real client needs their app connected to LinkedIn, a CRM, and an approval workflow.
 
-## Stages
+The demo uses the Sentinel Security engagement as its scenario. The patterns it illustrates — not the specific tools — are what carry forward into the actual project.
 
+### Three stages
+
+| Stage | Flask adds | Make does | Pattern illustrated |
+|---|---|---|---|
+| 1 — Blog | `make_webhook.py` + webhook call in `blog.py` + `/feed` RSS | LinkedIn post + Slack notification | Push vs. pull; fire-and-forget |
+| 2 — Lead Capture | `leads.py` blueprint | HubSpot contact + confirmation email | DB-first; boundary between app and integrations |
+| 3 — Case Studies | `case_studies.py` blueprint | Human-in-the-loop approval workflow | Conditional logic; data ownership |
+
+### The core pattern
+
+All three stages use the same approach: Flask writes to the database first, then fires a webhook to Make. Make handles everything that crosses a system boundary — LinkedIn, HubSpot, email. Flask never imports a LinkedIn or HubSpot SDK.
+
+<<<<<<< HEAD
 ### Stage 1 — Blog Post → Make → Slack + LinkedIn
 When a post is published, Flask fires a webhook to Make. Make cross-posts to LinkedIn and sends a Slack notification. `blog.py` also serves a `/feed` RSS route as a pull-model alternative.
 
@@ -51,13 +48,24 @@ Visitors can request access to gated case studies. Make routes the request to th
 ## Quickstart
 
 ### 1. Clone and install
+=======
+```
+Flask app                Make                    External services
+─────────────────────────────────────────────────────────────────
+POST /webhook  ──────►  Custom Webhook  ──────►  Slack
+  { payload }            Trigger         ├──────►  LinkedIn
+                                         └──────►  HubSpot / Email
+```
+
+The `make_webhook.py` utility is fire-and-forget: 5-second timeout, catches all exceptions, returns a bool. The app never crashes because Make is unreachable.
+
+### Quickstart
+>>>>>>> 3bd76a6103b648882213b540e7eb80b65e1a0473
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/sentinel-flaskr-demo.git
-cd sentinel-flaskr-demo
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+<<<<<<< HEAD
 ```
 
 ### 2. Configure environment
@@ -77,16 +85,20 @@ See the [Environment Variables](#environment-variables) table below for details 
 ### 3. Initialize the database and run
 
 ```bash
+=======
+cp .env.example .env          # add Make webhook URLs — app runs fine without them
+>>>>>>> 3bd76a6103b648882213b540e7eb80b65e1a0473
 flask --app flaskr init-db
 flask --app flaskr run --debug
 ```
 
 Visit `http://localhost:5000`. Register an account to create posts and test the forms.
 
----
+### Why these patterns matter regardless of stack
 
-## Project Structure
+The Flask demo is simple enough that the patterns are visible. But they apply in any stack:
 
+<<<<<<< HEAD
 ```
 sentinel-flaskr-demo/
 ├── flaskr/
@@ -116,58 +128,54 @@ sentinel-flaskr-demo/
 ├── framer-demo/             # Same Stage 2 outcome, zero backend
 └── requirements.txt
 ```
+=======
+- **DB-first before any external call** — whether you're in Flask, Next.js, or anything else, write to your own datastore before notifying an external service
+- **The app owns data and UX; external services own integrations** — this boundary holds whether the "app" is Flask, Webflow, or Next.js, and whether the integration layer is Make, Zapier, or direct API calls
+- **Treat external services as unreliable** — timeout, catch exceptions, log failures, have a fallback
+
+See [docs/design-decisions.md](docs/design-decisions.md) for the full rationale with historical and modern context.
+>>>>>>> 3bd76a6103b648882213b540e7eb80b65e1a0473
 
 ---
 
-## Documentation
+## Part 2: Sentinel Security Project Preparation
 
-The `docs/` folder contains both the Make setup walkthroughs and the
-architectural context for the decisions behind the demo.
+*Active — engagement begins May 1, 2026.*
+
+The Roux Institute is building a modernized website for Sentinel Security under SOW No. 26345. A two-student team will design, develop, and launch the site by July 15, 2026.
+
+**The actual deliverable is not a Flask app.** The platform is likely Next.js + Sanity, with Zapier for the case study approval workflow. The Flask demo is background — the project orientation document is what matters now.
+
+### Start here for the project
+
+[docs/project-orientation.md](docs/project-orientation.md) — platform decision, integration approach, open questions to resolve at the April 30 kickoff.
+
+### Key decisions still open
+
+- **Platform:** Next.js + Sanity vs. Webflow — confirm during discovery
+- **CRM:** No CRM in place yet; new hire joining end of April will drive this decision
+- **Who owns the site post-handoff:** The new hire, not Stacy — get them to the kickoff
+
+### Project documentation
 
 | Doc | Contents |
 |---|---|
-| [docs/design-decisions.md](docs/design-decisions.md) | Architectural principles behind the demo — the concepts worth carrying into the next project |
-| [docs/sow-mapping.md](docs/sow-mapping.md) | How each stage maps to the Sentinel Security SOW |
+| [docs/project-orientation.md](docs/project-orientation.md) | Platform decision, integration approach, open questions — read this first |
+| [docs/sow.pdf](docs/sow.pdf) | Statement of Work — 10-week engagement, May 1–July 15, 2026 |
+| [ee.md](ee.md) | Pre-kickoff meeting notes |
+
+---
+
+## Course Demo Documentation
+
+| Doc | Contents |
+|---|---|
+| [docs/design-decisions.md](docs/design-decisions.md) | Architectural principles behind the demo — patterns worth carrying into any project |
+| [docs/sow-mapping.md](docs/sow-mapping.md) | How each demo stage maps to the Sentinel Security SOW |
 | [docs/stage1.md](docs/stage1.md) | Stage 1 Make setup: webhook + RSS alternate approach |
 | [docs/stage2.md](docs/stage2.md) | Stage 2 Make setup: lead capture → HubSpot + email |
 | [docs/stage3.md](docs/stage3.md) | Stage 3 Make setup: approval workflow |
-| [framer-demo/](framer-demo/README.md) | Same Stage 2 outcome, zero backend — Framer form fires the same Make scenario |
-
----
-
-## Environment Variables
-
-| Variable | Stage | Description |
-|---|---|---|
-| `SECRET_KEY` | All | Flask secret key |
-| `MAKE_WEBHOOK_BLOG_POST` | 1 | Webhook URL for new blog posts |
-| `MAKE_WEBHOOK_LEAD_CAPTURE` | 2 | Webhook URL for lead form submissions |
-| `MAKE_WEBHOOK_CASE_STUDY_REQUEST` | 3 | Webhook URL for case study access requests |
-| `SENTINEL_REVIEW_EMAIL` | 3 | Email address for case study approval notifications |
-
----
-
-## The Webhook Pattern
-
-All three stages use the same approach. Flask sends a `POST` request with a JSON payload to a Make webhook URL. Make receives it and routes it to external services. Your Flask app doesn't need to know anything about Slack, HubSpot, or email — it just fires and forgets.
-
-```
-Flask app                Make                    External services
----------                ----                    -----------------
-POST /webhook  ──────►  Custom Webhook  ──────►  Slack
-  { payload }            Trigger         ├──────►  LinkedIn
-                                         └──────►  HubSpot / Email
-```
-
-The utility function in `make_webhook.py` handles this for all three stages:
-
-```python
-fire_webhook("BLOG_POST", {
-    "title": title,
-    "author": g.user["username"],
-    "url": url_for("blog.detail", id=post_id, _external=True),
-})
-```
+| [docs/free-tier.md](docs/free-tier.md) | Make free plan constraints and workarounds |
 
 ---
 

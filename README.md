@@ -29,22 +29,22 @@ for the full rundown, including the LinkedIn workaround and how to handle RSS po
 ## Stages
 
 ### Stage 1 — Blog Post → Make → Slack + LinkedIn
-When a post is published, Flask fires a webhook to Make. Make cross-posts to LinkedIn and sends a Slack notification.
+When a post is published, Flask fires a webhook to Make. Make cross-posts to LinkedIn and sends a Slack notification. `blog.py` also serves a `/feed` RSS route as a pull-model alternative.
 
-**New code:** `flaskr/make_webhook.py`, one webhook call in `flaskr/blog.py`  
-**Make scenario:** `make_scenarios/stage1_blog_notify/`
+**New code:** `flaskr/make_webhook.py`, one webhook call and `/feed` RSS route in `flaskr/blog.py`  
+**Make setup:** [docs/stage1.md](docs/stage1.md) — export blueprint to `make_scenarios/stage1_blog_notify/` once built
 
 ### Stage 2 — Lead Capture → Make → HubSpot + Email
 A contact form on the site POSTs to Make via webhook. Make creates a HubSpot contact and sends a confirmation email to the prospect.
 
 **New code:** `flaskr/leads.py`, `flaskr/templates/leads/`  
-**Make scenario:** `make_scenarios/stage2_lead_capture/`
+**Make setup:** [docs/stage2.md](docs/stage2.md) — export blueprint to `make_scenarios/stage2_lead_capture/` once built
 
 ### Stage 3 — Case Study Request → Make → Approval Workflow
 Visitors can request access to gated case studies. Make routes the request to the Sentinel team for review, then conditionally sends the download link or a decline email.
 
 **New code:** `flaskr/case_studies.py`, `flaskr/templates/case_studies/`  
-**Make scenario:** `make_scenarios/stage3_case_study_approval/`
+**Make setup:** [docs/stage3.md](docs/stage3.md) — export blueprint to `make_scenarios/stage3_case_study_approval/` once built
 
 ---
 
@@ -62,11 +62,17 @@ pip install -r requirements.txt
 
 ### 2. Configure environment
 
+Create a `.env` file and add your Make webhook URLs. The app runs fine without them — webhook calls are silently skipped if a URL isn't set.
+
 ```bash
-cp .env.example .env
+SECRET_KEY=change-me
+MAKE_WEBHOOK_BLOG_POST=
+MAKE_WEBHOOK_LEAD_CAPTURE=
+MAKE_WEBHOOK_CASE_STUDY_REQUEST=
+SENTINEL_REVIEW_EMAIL=
 ```
 
-Edit `.env` and add your Make webhook URLs (see [Stage setup docs](#stage-setup-docs) below). The app runs fine without them — webhook calls are silently skipped if a URL isn't set.
+See the [Environment Variables](#environment-variables) table below for details on each.
 
 ### 3. Initialize the database and run
 
@@ -88,7 +94,7 @@ sentinel-flaskr-demo/
 │   ├── db.py                # Database connection helpers
 │   ├── schema.sql           # Tables: user, post, lead, case_study, case_study_request
 │   ├── auth.py              # Register / login / logout (Flaskr, unchanged)
-│   ├── blog.py              # Post CRUD + Stage 1 webhook call
+│   ├── blog.py              # Post CRUD + Stage 1 webhook call + /feed RSS
 │   ├── leads.py             # Stage 2: lead capture form
 │   ├── case_studies.py      # Stage 3: gated case study requests
 │   ├── make_webhook.py      # Shared webhook utility used by all stages
@@ -99,15 +105,15 @@ sentinel-flaskr-demo/
 │       ├── leads/
 │       └── case_studies/
 ├── make_scenarios/
-│   ├── stage1_blog_notify/       # Make blueprint JSON + setup guide
-│   ├── stage2_lead_capture/      # Make blueprint JSON + setup guide
-│   └── stage3_case_study_approval/
+│   └── README.md            # Blueprint export/import instructions (blueprints added once built)
 ├── docs/
-│   ├── sow-mapping.md            # How each stage maps to the Sentinel SOW
-│   ├── stage1.md                 # Stage 1 Make setup walkthrough
-│   ├── stage2.md                 # Stage 2 Make setup walkthrough
-│   └── stage3.md                 # Stage 3 Make setup walkthrough
-├── .env.example
+│   ├── design-decisions.md  # Architectural principles behind the demo
+│   ├── free-tier.md         # Make free plan constraints and workarounds
+│   ├── sow-mapping.md       # How each stage maps to the Sentinel SOW
+│   ├── stage1.md            # Stage 1 Make setup walkthrough
+│   ├── stage2.md            # Stage 2 Make setup walkthrough
+│   └── stage3.md            # Stage 3 Make setup walkthrough
+├── framer-demo/             # Same Stage 2 outcome, zero backend
 └── requirements.txt
 ```
 

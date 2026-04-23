@@ -121,6 +121,7 @@ The Roux Institute is building a modernized website for Sentinel Security under 
 
 - **Platform:** Next.js + Sanity vs. Webflow — confirm during discovery. The Flask demo exposes a real constraint: without a CMS, the client can't add blog posts, update case studies, or change page copy without a developer. Both Sanity and Webflow solve this; plain Next.js without a CMS does not.
 - **CRM:** No CRM in place yet; new hire joining end of April will drive this decision
+- **Automation platform:** Currently listed as Zapier, but Make handles conditional branching better (see [zapier-vs-make.md](zapier-vs-make.md)). The right call depends on who maintains the workflows post-handoff — if it's a developer, Make; if it's a non-technical new hire working solo, Zapier's lower learning curve may matter more. Confirm at kickoff.
 - **Who owns the site post-handoff:** The new hire, not Stacy — get them to the kickoff
 
 ### Project documentation

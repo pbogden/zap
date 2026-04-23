@@ -129,7 +129,6 @@ The Roux Institute is building a modernized website for Sentinel Security under 
 |---|---|
 | [docs/project-orientation.md](docs/project-orientation.md) | Platform decision, integration approach, open questions — read this first |
 | [docs/sow.pdf](docs/sow.pdf) | Statement of Work — 10-week engagement, May 1–July 15, 2026 |
-| [ee.md](ee.md) | Pre-kickoff meeting notes |
 
 ---
 

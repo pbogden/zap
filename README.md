@@ -4,6 +4,18 @@ A teaching demo built on the [Flask Flaskr tutorial](https://flask.palletsprojec
 
 ---
 
+## What this demo is — and isn't
+
+**Flask is a developer tool.** You can't deploy a Flask app without a developer, and you can't maintain one without a developer when things change. Every integration decision in this demo assumes a developer is in the loop — because with Flask, one always is.
+
+This matters because the client in this demo is a small firm with no dedicated technical staff. In the real world, that client probably shouldn't be running a Flask app at all. A modern website platform — Webflow, or Next.js with a headless CMS like Sanity — would give them a better handoff: content management without a developer, hosted infrastructure they don't have to think about, and a frontend ecosystem with active support and tooling.
+
+Flask can get close. You can add a CMS layer (Wagtail, Flask-Admin), deploy to PythonAnywhere, and give non-technical staff a content editing interface. But the gaps are real: no global CDN, no modern React-based frontend, no CMS as well-integrated as Sanity, and an ecosystem that's respected but not where modern web development is concentrated in 2026.
+
+**So why use Flask for this demo?** Because Flask is transparent. There's no framework magic obscuring what's happening. The patterns this demo teaches — write to your database before calling external services, match your tool choice to who will maintain the integration, design for failure at system boundaries — are visible in Flask in a way they aren't in higher-abstraction frameworks. Learn the pattern here; apply it in whatever stack you actually build with.
+
+---
+
 ## The client
 
 A small professional services firm — a few people, no dedicated technical staff, growing. They have a website with a blog. They want to reach more clients, capture leads, and share expertise without adding operational overhead.

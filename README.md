@@ -21,7 +21,7 @@ Stages 1 and 2 are more debatable. `requests` is already a dependency, so a Slac
 
 | Stage | Flask adds | Make does | Pattern illustrated |
 |---|---|---|---|
-| 1 — Blog | `make_webhook.py` + webhook call in `blog.py` + `/feed` RSS | LinkedIn post + Slack notification | Push vs. pull; fire-and-forget |
+| 1 — Blog | `/feed` RSS/Atom route in `blog.py` | nothing — pull is simpler than push here | Pull vs. push; choose the simplest solution |
 | 2 — Lead Capture | `leads.py` blueprint | HubSpot contact + confirmation email | DB-first; boundary between app and integrations |
 | 3 — Case Studies | `case_studies.py` blueprint | Human-in-the-loop approval workflow | Conditional logic; data ownership |
 

@@ -1,22 +1,44 @@
-# Stage 3 — Case Study Request → Make → Approval Workflow
+# Stage 3 — Gated Content: Human-in-the-Loop Approval
 
-## What This Demonstrates
+## Functional requirement
 
-This is the most sophisticated stage. When a visitor requests a case study,
-Make runs an **asynchronous, human-in-the-loop approval workflow** — something
-that would require significant infrastructure to build natively in Flask.
+Visitors can request access to premium content. The client reviews each request and decides whether to grant access — with the appropriate email sent either way.
 
-The flow:
-1. Flask fires a webhook with the request details
-2. Make emails the Sentinel team with Approve / Decline buttons
-3. A team member clicks a button
-4. Make sends the requester either the download link or a polite decline
+## Why Make — not direct API calls
 
-Flask's role ends after step 1. The rest is entirely Make.
+Stage 2 used direct API calls because the logic was simple, stable, and developer-owned. This stage tips the other way.
+
+The approval workflow has three properties that make an automation platform the right choice:
+
+1. **Conditional branching.** The outcome depends on a human decision — approve or decline — with different emails wired to each path.
+
+2. **Human-in-the-loop.** Execution pauses while a person makes a decision. This isn't a standard request/response cycle.
+
+3. **Non-developer ownership.** The client needs to be able to modify this workflow after handoff — change the email copy, adjust who gets notified, add a step — without a code change or deployment.
+
+Building this in Flask alone means writing a state machine: request states (`pending`, `approved`, `declined`), routes for a reviewer to trigger transitions, and the right email wired to each outcome. That's significant infrastructure for what is fundamentally a business process. Make collapses it to a 10-minute scenario that the client can maintain themselves.
+
+That's when an automation platform earns its place.
 
 ---
 
-## The Payload Flask Sends
+## What Flask adds
+
+**`flaskr/case_studies.py`** — a new blueprint with:
+- `GET /case-studies` — lists available case studies
+- `POST /case-studies/<id>/request` — validates input, writes request to DB, fires webhook to Make
+
+**`flaskr/templates/case_studies/`** — list and request form templates
+
+**`flaskr/schema.sql`** — `case_study` and `case_study_request` tables; case studies are seeded directly
+
+**`flaskr/make_webhook.py`** — fire-and-forget webhook utility (reused from the original Flaskr extension)
+
+**Limitation:** There's no admin UI for managing case studies. Adding or retiring one requires a direct database change. For a real handoff, the client needs either a simple admin interface or a platform with a built-in CMS.
+
+---
+
+## The payload Flask sends
 
 ```json
 {
@@ -31,176 +53,143 @@ Flask's role ends after step 1. The rest is entirely Make.
 }
 ```
 
+DB write happens before the webhook fires. The request exists even if Make is unreachable.
+
 ---
 
-## Building the Make Scenario
+## Building the Make scenario
 
-This stage uses 3 Make scenarios total (request handler + approve + decline),
-which exceeds the free plan's 2-scenario limit. For an instructor demo, deactivate
-the Stage 1 or Stage 2 scenario before activating the Stage 3 ones — the toggle
-is in the bottom-left corner of any open scenario and takes about 10 seconds.
-See [free-tier.md](free-tier.md) for the full swap sequence.
-pauses execution until an external event (the approval click) resumes it.
+This stage uses 3 Make scenarios (request handler + approve + decline), which exceeds the free plan's 2-scenario limit. For an instructor demo, deactivate a Stage 1 or Stage 2 scenario before activating the Stage 3 ones. See [free-tier.md](free-tier.md) for the full swap sequence.
 
 ### Step 1 — Create the webhook trigger
 
-Same as previous stages. Name it `sentinel-case-study-request` and add the URL to `.env`:
+Create a new scenario, add a **Custom Webhook** module, name it `case-study-request`, and add the URL to `.env`:
 
 ```
-MAKE_WEBHOOK_CASE_STUDY_REQUEST=https://hook.us1.make.com/ghi789rst
+MAKE_WEBHOOK_CASE_STUDY_REQUEST=https://hook.us1.make.com/abc123
 ```
 
-Submit a test case study request to teach Make the payload structure.
+Submit a test request to teach Make the payload structure.
 
-### Step 2 — Add a second Custom Webhook (for the approval response)
+### Step 2 — Create approve and decline webhooks
 
-The approval buttons in the email will each point to a URL. The simplest
-approach is to create **two additional webhooks** in Make:
-- `sentinel-cs-approve` — triggered when the team clicks Approve
-- `sentinel-cs-decline` — triggered when the team clicks Decline
+The approval buttons in the email will each point to a Make webhook URL. Create two additional webhooks now:
+- `case-study-approve` — triggered when the reviewer clicks Approve
+- `case-study-decline` — triggered when the reviewer clicks Decline
 
-Create these now and copy their URLs. You'll embed them in the approval email.
+Copy both URLs — you'll embed them in the approval email in the next step.
 
-> **Alternative:** Use Make's built-in **Wait** module to pause the scenario and
-> resume on a webhook response. This keeps everything in one scenario but
-> requires a Make plan that supports waiting. The two-webhook approach works on
-> all plans.
-
-### Step 3 — Send the approval email to the Sentinel team
+### Step 3 — Send the approval email to the reviewer
 
 After the webhook trigger, add an **Email** module:
 
-- **To:** *(your `SENTINEL_REVIEW_EMAIL` from `.env`)*
+- **To:** your `APPROVAL_EMAIL` from `.env`
 - **Subject:** `Case Study Request: {{case_study_title}} — {{requester_name}}`
 - **Content (HTML):**
-  ```html
-  <p>A new case study request has come in:</p>
-  <ul>
-    <li><strong>Case Study:</strong> {{case_study_title}}</li>
-    <li><strong>Industry:</strong> {{case_study_industry}}</li>
-    <li><strong>Requester:</strong> {{requester_name}}</li>
-    <li><strong>Company:</strong> {{requester_company}}</li>
-    <li><strong>Email:</strong> {{requester_email}}</li>
-  </ul>
-  <p>
-    <a href="https://hook.us1.make.com/YOUR_APPROVE_WEBHOOK?request_id={{request_id}}&email={{requester_email}}&title={{case_study_title}}&file_url={{file_url}}"
-       style="background:#1a1a2e;color:white;padding:10px 20px;text-decoration:none;border-radius:4px;">
-      ✅ Approve
-    </a>
-    &nbsp;&nbsp;
-    <a href="https://hook.us1.make.com/YOUR_DECLINE_WEBHOOK?request_id={{request_id}}&email={{requester_email}}&title={{case_study_title}}"
-       style="background:#c00;color:white;padding:10px 20px;text-decoration:none;border-radius:4px;">
-      ❌ Decline
-    </a>
-  </p>
-  ```
 
-> The data you need downstream (email, file URL, case study title) is passed
-> as query parameters on the button URLs. Make extracts them automatically when
-> those webhooks are triggered. This is a handy pattern to highlight.
+```html
+<p>New case study request:</p>
+<ul>
+  <li><strong>Case Study:</strong> {{case_study_title}}</li>
+  <li><strong>Industry:</strong> {{case_study_industry}}</li>
+  <li><strong>Requester:</strong> {{requester_name}}, {{requester_company}}</li>
+  <li><strong>Email:</strong> {{requester_email}}</li>
+</ul>
+<p>
+  <a href="https://hook.us1.make.com/YOUR_APPROVE_URL?request_id={{request_id}}&email={{requester_email}}&title={{case_study_title}}&file_url={{file_url}}"
+     style="background:#1a1a2e;color:white;padding:10px 20px;text-decoration:none;border-radius:4px;">
+    Approve
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://hook.us1.make.com/YOUR_DECLINE_URL?request_id={{request_id}}&email={{requester_email}}&title={{case_study_title}}"
+     style="background:#c00;color:white;padding:10px 20px;text-decoration:none;border-radius:4px;">
+    Decline
+  </a>
+</p>
+```
+
+The data needed downstream (email, file URL, title) is passed as query parameters on the button URLs. Make extracts them automatically when those webhooks fire.
 
 ### Step 4 — Build the Approve scenario
 
-Create a new scenario triggered by the `sentinel-cs-approve` webhook.
+Create a new scenario triggered by `case-study-approve`. Add an **Email** module:
 
-After the trigger, add an **Email** module:
-
-- **To:** `{{email}}` *(from the query params)*
-- **Subject:** `Your Sentinel Security Case Study is Ready`
+- **To:** `{{email}}`
+- **Subject:** `Your case study request has been approved`
 - **Content:**
   ```
   Hi,
 
-  Great news — your request for "{{title}}" has been approved.
+  Your request for "{{title}}" has been approved.
 
-  You can download the full case study here:
-  {{file_url}}
+  Download it here: {{file_url}}
 
-  This link is for your use only. Please don't share it publicly.
-
-  — Sentinel Security
+  This link is for your use only.
   ```
 
 ### Step 5 — Build the Decline scenario
 
-Create a new scenario triggered by the `sentinel-cs-decline` webhook.
-
-After the trigger, add an **Email** module:
+Create a new scenario triggered by `case-study-decline`. Add an **Email** module:
 
 - **To:** `{{email}}`
-- **Subject:** `Re: Your Case Study Request — Sentinel Security`
+- **Subject:** `Re: Your case study request`
 - **Content:**
   ```
   Hi,
 
   Thank you for your interest in "{{title}}."
 
-  After reviewing your request, we're not able to share this particular
-  case study at this time. We'd be happy to discuss your needs directly —
-  please feel free to reach out via our contact page.
-
-  — Sentinel Security
+  We're not able to share this particular case study at this time.
+  We'd be happy to discuss your needs directly — please use our contact form.
   ```
 
 ---
 
-## Design Discussion Points
-
-### Why not just send the link immediately?
-
-This is the SOW's specific requirement: *"allows Sentinel Security to vet
-inquiries before releasing materials."* The vetting is a business requirement,
-not a technical one. Make makes it implementable without building a whole
-admin dashboard.
-
-Ask students: what would this feature cost to build natively in Flask?
-- Async job queue (Celery or RQ)
-- Token-based approval URLs with expiry
-- Email sending (Flask-Mail or similar)
-- Status tracking in the DB
-- An admin UI to see pending requests
-
-Make collapses all of that to a 10-minute scenario.
-
-### The `request_id` in the payload
-
-Notice that `request_id` is included in the webhook payload and echoed back
-through the approval/decline URLs. This allows you to update the
-`case_study_request.status` column in your DB — but only if you build a small
-Flask endpoint that Make can call to confirm the outcome.
-
-This is a natural extension exercise: add a `/internal/case-study-request/<id>/status`
-endpoint that Make can POST to, and update the row from `pending` to `approved`
-or `declined`.
-
----
-
-## Full Flow Diagram
+## Flow
 
 ```
 Flask (case_studies.py)
   │
-  │  POST { request_id, case_study_title, requester_*, file_url }
+  │  DB write — request saved as 'pending'
+  │  POST { request_id, requester_*, case_study_*, file_url }
   ▼
-Make Scenario A: Custom Webhook (sentinel-case-study-request)
+Make Scenario A: Custom Webhook
   │
-  └──► Email to Sentinel team
-         [✅ Approve] → hits sentinel-cs-approve?email=...&file_url=...
-         [❌ Decline] → hits sentinel-cs-decline?email=...&title=...
+  └──► Email to reviewer
+         [Approve] → hits case-study-approve?email=...&file_url=...
+         [Decline] → hits case-study-decline?email=...&title=...
 
 
-Team member clicks Approve
-  │
-  ▼
-Make Scenario B: Custom Webhook (sentinel-cs-approve)
-  │
-  └──► Email to requester: "Your case study is ready — {file_url}"
-
-
-Team member clicks Decline
+Reviewer clicks Approve
   │
   ▼
-Make Scenario C: Custom Webhook (sentinel-cs-decline)
+Make Scenario B: Custom Webhook (case-study-approve)
   │
-  └──► Email to requester: "We're unable to share this at this time..."
+  └──► Email to requester: download link
+
+
+Reviewer clicks Decline
+  │
+  ▼
+Make Scenario C: Custom Webhook (case-study-decline)
+  │
+  └──► Email to requester: polite decline
 ```
+
+---
+
+## Discussion points
+
+**What would this cost to build natively in Flask?**
+- Async job queue (Celery or RQ) to pause execution until the review happens
+- Token-based approval URLs with expiry so links can't be shared or reused
+- Email sending with Flask-Mail or similar
+- Status tracking in the DB with a reviewer UI to see pending requests
+
+Make collapses all of that to three scenarios the client can modify themselves. For a business process that will change over time, that's the right tradeoff.
+
+**The `request_id` in the payload**
+`request_id` is echoed back through the approve/decline URLs. This allows you to update the `case_study_request.status` column in the DB when a decision is made — but only if you add a Flask endpoint that Make calls to confirm the outcome. This is a natural extension exercise: add a `/internal/requests/<id>/status` endpoint and update the row from `pending` to `approved` or `declined`.
+
+**When would you move away from Make?**
+If the workflow grows complex enough that Make's visual canvas becomes harder to reason about than code — deeply nested conditionals, many branches, tight latency requirements — it's time to bring it back into the codebase. The same DB-first pattern from Stage 2 applies: write to the DB, enqueue the job, process asynchronously.

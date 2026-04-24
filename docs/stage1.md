@@ -12,9 +12,9 @@ The question before writing any code: does this require push or pull?
 
 **Pull** (RSS/Atom feed) works the other way: instead of your app notifying anyone, interested parties check in on their own schedule and pick up whatever is new. Think of it like a newspaper on the doorstep — it's there when you want it, and you don't need to call the publisher every morning to ask if there's a new edition. Newsletter platforms (Mailchimp, Buttondown, Substack) do exactly this: you give them your feed URL once, and they check it automatically and email your subscribers whenever something new appears.
 
-For a small team where the same person writes the post and shares it on LinkedIn, push solves a problem that doesn't exist — there's no one to notify who doesn't already know. RSS is the right answer: one route, no external accounts to manage, no automation to break.
+For a small team where the same person writes the post and shares it on LinkedIn, there's no one to notify who doesn't already know. RSS is the right answer: set it up once, point a newsletter tool at it, and new posts reach subscribers automatically.
 
-Add push later if the team grows and the handoff between publisher and distributor becomes a real coordination problem.
+Add notifications later if the team grows and blog publishing becomes someone's job while sharing it on social becomes someone else's.
 
 ---
 
@@ -61,7 +61,7 @@ To connect a newsletter platform: paste `http://your-domain.com/feed` into the R
 
 RSS covers the case where the client wants to distribute content to subscribers. A webhook becomes useful when:
 
-- The publisher and distributor are different people and timing matters
+- The person publishing and the person sharing are different people, and timing matters
 - The client wants immediate notifications (Slack, Teams, email) on publish
 - The downstream service can't or won't poll (some CRMs, internal tools)
 

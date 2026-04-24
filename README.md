@@ -1,7 +1,5 @@
 # Flask + Make.com — Webhook Integration Demo
 
-claude --resume 6e114735-1fdf-4531-be08-49ba56a9ee9e
-
 A teaching demo that extends the [Flask Flaskr tutorial](https://flask.palletsprojects.com/en/stable/tutorial/) with [Make.com](https://make.com) automation. The goal is to make the integration boundary pattern visible: how a web app hands off to external services without coupling to them.
 
 ---

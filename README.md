@@ -1,5 +1,3 @@
-claude --resume 6e02bb4c-60a0-4024-87d6-314b77c27773
-
 # Web App Integration Demo
 
 A teaching demo built on the [Flask Flaskr tutorial](https://flask.palletsprojects.com/en/stable/tutorial/). Each stage adds a feature driven by a real functional requirement from a small startup client. For each requirement, we ask: what's the simplest approach that actually meets the need? The answer isn't always the same tool.
@@ -8,9 +6,7 @@ A teaching demo built on the [Flask Flaskr tutorial](https://flask.palletsprojec
 
 ## What this demo is — and isn't
 
-**Flask is a developer tool.** You can't deploy a Flask app without a developer, and you can't maintain one without a developer when things change. Every integration decision in this demo assumes a developer is in the loop — because with Flask, one always is.
-
-This matters because the client in this demo is a small firm with no dedicated technical staff. In the real world, that client probably shouldn't be running a Flask app at all. A modern website platform — Webflow, or Next.js with a headless CMS like Sanity — would give them a better handoff: content management without a developer, hosted infrastructure they don't have to think about, and a frontend ecosystem with active support and tooling.
+**Flask is a developer tool.** It's used here because the patterns are visible without framework abstractions in the way — not because it's the right choice for a client without technical staff. The Handoff section covers what that means in practice. Here's the technical landscape for teams choosing a production stack.
 
 Python can get closer than Flask alone. The most credible Python path is **Django + Wagtail**, deployed on Railway or Render. Wagtail is a CMS built on Django with a genuinely good content editing interface — used by NASA, Google, and the NHS — and is the closest Python equivalent to Sanity. Railway and Render are modern hosting platforms that are a meaningful step up from PythonAnywhere. This stack is a legitimate choice for a production site that non-technical staff need to manage.
 
@@ -20,22 +16,17 @@ But the gap that doesn't close: Next.js is fundamentally a React framework. To m
 
 But if the product evolves toward something where AI is the product — agents doing substantial reasoning, orchestration, or data processing — Python becomes competitive again. The Python AI ecosystem (Anthropic SDK, LangChain, LangGraph, LlamaIndex) is significantly more mature than the JavaScript equivalents. At that point the right architecture is a Python AI backend with a React frontend calling it.
 
-Between Flask and Django for that backend: they're not comparable. Flask is too minimal for a production AI application on its own — it gives you routing and not much else.
-
 **Django** is a legitimate and serious choice for agentic AI applications, particularly for teams already working in Python and building systems where the intelligence is the product. Django's structure, ORM, and admin interface are genuinely useful when you're building something complex — not just serving API requests, but managing data, users, workflows, and state. If your team knows Django and is building AI-powered applications, there's no compelling reason to switch. Django + LangChain or Django + LangGraph is a credible production stack.
 
-**FastAPI** is the lighter alternative when the backend is primarily serving AI-driven API requests and you don't need Django's full feature set. It's async-native (which matters when you're waiting on model responses), generates API documentation automatically, and is what most AI framework examples use. If you're starting fresh on a Python AI backend and don't need the CMS or admin interface, FastAPI is the more natural choice.
-
-The decision between them isn't about which is better — it's about what the application needs. Django for complex, stateful, content-managed AI applications. FastAPI for lightweight, API-first AI backends.
-
+**FastAPI** is the lighter alternative when the backend is primarily serving AI-driven API requests and you don't need Django's full feature set. It's async-native (which matters when you're waiting on model responses), generates API documentation automatically, and is what most AI framework examples use. Django for complex, stateful, content-managed AI applications; FastAPI for lightweight, API-first AI backends.
 
 A few other Python tools worth knowing in this space:
 
 **Pydantic** — not a framework but foundational to modern Python. FastAPI is built on it, LangChain uses it, the Anthropic SDK uses it. It's Python's answer to TypeScript's type system: structured, validated data objects that make API contracts explicit. Students will encounter it everywhere in the Python AI ecosystem.
 
-**Streamlit, Gradio, Chainlit** — three tools for building AI interfaces rapidly in pure Python, each with a different focus. Streamlit is the most general — good for multi-page apps and dashboards. Gradio is optimized for single-function demos and ML model interfaces — simpler to get started but less flexible for complex apps. Chainlit is specifically designed for chat interfaces and LLM applications. None of these are suitable for a marketing site, but for prototyping an AI feature or shipping an internal tool quickly, any of the three is faster than building a React frontend from scratch.
+**Streamlit, Gradio, Chainlit** — three tools for building AI interfaces rapidly in pure Python. Streamlit is the most general. Gradio is optimized for single-function demos and ML model interfaces. Chainlit is for chat interfaces and LLM applications. None are suitable for a marketing site, but any of the three is faster than a React frontend for an internal tool or prototype.
 
-**Modal** — serverless Python infrastructure with GPU access on demand. Write Python with Modal decorators and Modal handles provisioning, scaling, and teardown — you pay only for actual compute time. Relevant when you need to run a model without provisioning a server. Used by hundreds of enterprise teams in production. The caveat: it's powerful but not always the most cost-effective choice, and some teams find alternatives like RunPod or self-hosted solutions better suited to their needs.
+**Modal** — serverless Python infrastructure with GPU access on demand. Modal decorators handle provisioning, scaling, and teardown; you pay only for actual compute time. The caveat: not always the most cost-effective choice — some teams prefer RunPod or self-hosted solutions.
 
 **So why use Flask for this demo?** Because Flask is transparent. There's no framework magic obscuring what's happening. The patterns this demo teaches — write to your database before calling external services, match your tool choice to who will maintain the integration, design for failure at system boundaries — are visible in Flask in a way they aren't in higher-abstraction frameworks. Learn the pattern here; apply it in whatever stack you actually build with.
 
@@ -50,6 +41,24 @@ A small professional services firm — a few people, no dedicated technical staf
 ## How to read this demo
 
 Each stage starts with a **functional requirement** — what the client actually needs, in plain language. Then it explains why a particular approach was chosen over alternatives. The decision is the lesson, not just the code.
+
+---
+
+## Handoff
+
+Every decision in this demo is shaped by one question: **who can change this after the project ends?**
+
+Flask always requires a developer — to deploy, update dependencies, or modify an integration when an upstream API changes. For a client with no technical staff, that's a structural constraint the platform can't solve. The better handoff is a platform like Webflow or Next.js + Sanity, where content management doesn't require a developer. Flask is used here because the patterns are easier to see without framework abstractions — but the patterns apply regardless of platform.
+
+The three stages give three different answers to the ownership question:
+
+| Stage | Integration | Who owns it after handoff |
+|---|---|---|
+| 1 — Blog | RSS/Atom feed | Nobody — configure once, runs indefinitely |
+| 2 — Lead capture | Direct API calls | A developer — logic is stable, Flask implies one |
+| 3 — Gated content | Make automation | A non-developer — client needs to modify the workflow |
+
+Stage 3 is the one case where Make is justified — not because the logic is complex, but because a non-developer needs to own and modify it. That distinction is the point.
 
 ---
 

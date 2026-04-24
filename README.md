@@ -6,11 +6,7 @@ A teaching demo built on the [Flask Flaskr tutorial](https://flask.palletsprojec
 
 ## What this demo is — and isn't
 
-**Flask is a developer tool.** It's used here because the patterns are visible without framework abstractions in the way — not because it's the right choice for a client without technical staff. The Handoff section covers what that means in practice. Here's the technical landscape for teams choosing a production stack.
-
-Python can get closer than Flask alone. The most credible Python path is **Django + Wagtail**, deployed on Railway or Render. Wagtail is a CMS built on Django with a genuinely good content editing interface — used by NASA, Google, and the NHS — and is the closest Python equivalent to Sanity. Railway and Render are modern hosting platforms that are a meaningful step up from PythonAnywhere. This stack is a legitimate choice for a production site that non-technical staff need to manage.
-
-But the gap that doesn't close: Next.js is fundamentally a React framework. To match it with Python, you'd end up running Django as a backend API with a separate React frontend — essentially reinventing the Next.js architecture with more moving parts. The modern frontend ecosystem, component libraries, and Vercel's global edge network don't have direct Python equivalents. For a client-facing marketing site in 2026, Next.js + Sanity is the more professional choice — not because Python is wrong, but because the JavaScript ecosystem has pulled ahead on the frontend.
+**Flask is a developer tool.** It's used here because the patterns are visible without framework abstractions in the way. Platform alternatives and the handoff implications are covered in the Handoff section below. This section covers the technical landscape for teams choosing a production stack — particularly where Python fits in a world dominated by the JavaScript frontend ecosystem.
 
 **What about agentic AI?** This is where the tradeoffs shift again. For a marketing site with AI features added on — a chatbot, AI-assisted content drafting, lead qualification — Next.js + Sanity still wins. The Vercel AI SDK is the leading tool for AI-enhanced web UIs. And Sanity's MCP server — now hosted at `mcp.sanity.io` and auto-configured by Claude Code — lets AI agents execute GROQ queries, manage content releases, and patch documents with full awareness of your schema. Sanity has also released Agent Skills: best practices that teach AI agents how to build with Sanity correctly. If you want an AI that drafts blog posts and saves them to the CMS, that's not a future feature — it's available now.
 
@@ -59,6 +55,17 @@ The three stages give three different answers to the ownership question:
 | 3 — Gated content | Make automation | A non-developer — client needs to modify the workflow |
 
 Stage 3 is the one case where Make is justified — not because the logic is complex, but because a non-developer needs to own and modify it. That distinction is the point.
+
+The same question applies to the platform itself — not just the integrations, but who can manage the site day-to-day:
+
+| Platform | Content edits | Code changes |
+|---|---|---|
+| Flask (this demo) | Developer required | Developer required |
+| Django + Wagtail | Non-developer via Wagtail editor | Developer required |
+| Next.js + Sanity | Non-developer via Sanity Studio | Developer required |
+| Webflow | Non-developer — no code needed | Within Webflow's visual constraints |
+
+Django + Wagtail and Next.js + Sanity both give non-technical staff a content editor while keeping code in developer hands. Webflow goes further — no developer required for day-to-day management, within its canvas constraints. The case for Next.js + Sanity over the Python path: matching it with Python means running Django as an API with a separate React frontend — more moving parts for the same result, and the frontend ecosystem has pulled ahead on the JavaScript side.
 
 ---
 

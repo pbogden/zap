@@ -6,25 +6,28 @@ A teaching demo built on the [Flask Flaskr tutorial](https://flask.palletsprojec
 
 ## What this demo is — and isn't
 
-**Flask is a developer tool.** It's used here because the patterns are visible without framework abstractions in the way. Platform alternatives and the handoff implications are covered in the Handoff section below. This section covers the technical landscape for teams choosing a production stack — particularly where Python fits in a world dominated by the JavaScript frontend ecosystem.
+**Flask is a developer tool.** Here's how it compares to the realistic alternatives for a client-facing site:
 
-**What about agentic AI?** This is where the tradeoffs shift again. For a marketing site with AI features added on — a chatbot, AI-assisted content drafting, lead qualification — Next.js + Sanity still wins. The Vercel AI SDK is the leading tool for AI-enhanced web UIs. And Sanity's MCP server — now hosted at `mcp.sanity.io` and auto-configured by Claude Code — lets AI agents execute GROQ queries, manage content releases, and patch documents with full awareness of your schema. Sanity has also released Agent Skills: best practices that teach AI agents how to build with Sanity correctly. If you want an AI that drafts blog posts and saves them to the CMS, that's not a future feature — it's available now.
+| | Flask | Django + Wagtail | Next.js + Sanity | Webflow |
+|---|:---:|:---:|:---:|:---:|
+| Non-developer content editing | ✗ | ✓ | ✓ | ✓ |
+| No developer for site changes | ✗ | ✗ | ✗ | ✓ |
+| AI features added on (chatbot, drafting) | ✓ | ✓ | ✓ | ✗ |
+| Vercel AI SDK / Sanity MCP | ✗ | ✗ | ✓ | ✗ |
+| AI as the product (Python ecosystem) | — | ✓ | — | ✗ |
+| Used in this demo | ✓ | | | |
 
-But if the product evolves toward something where AI is the product — agents doing substantial reasoning, orchestration, or data processing — Python becomes competitive again. The Python AI ecosystem (Anthropic SDK, LangChain, LangGraph, LlamaIndex) is significantly more mature than the JavaScript equivalents. At that point the right architecture is a Python AI backend with a React frontend calling it.
+**AI features added on** — chatbot, AI-assisted drafting, lead qualification layered onto a marketing site. Next.js + Sanity is the strongest choice: the Vercel AI SDK handles AI-enhanced web UIs, and Sanity's MCP server (hosted at `mcp.sanity.io`, auto-configured by Claude Code) lets AI agents query content, manage releases, and patch documents with full schema awareness. If you want an AI that drafts blog posts and saves them to the CMS, that's available now.
 
-**Django** is a legitimate and serious choice for agentic AI applications, particularly for teams already working in Python and building systems where the intelligence is the product. Django's structure, ORM, and admin interface are genuinely useful when you're building something complex — not just serving API requests, but managing data, users, workflows, and state. If your team knows Django and is building AI-powered applications, there's no compelling reason to switch. Django + LangChain or Django + LangGraph is a credible production stack.
+**AI as the product** — agents doing substantial reasoning, orchestration, or data processing — is where Python becomes competitive. The Python AI ecosystem (Anthropic SDK, LangChain, LangGraph, LlamaIndex) is significantly more mature than the JavaScript equivalents; the right architecture is a Python AI backend with a React frontend. For that backend: **Django** for complex, stateful AI applications (structure, ORM, admin, data management); **FastAPI** for lightweight, API-first AI backends (async-native, auto-generated docs, what most AI framework examples use).
 
-**FastAPI** is the lighter alternative when the backend is primarily serving AI-driven API requests and you don't need Django's full feature set. It's async-native (which matters when you're waiting on model responses), generates API documentation automatically, and is what most AI framework examples use. Django for complex, stateful, content-managed AI applications; FastAPI for lightweight, API-first AI backends.
+A few other Python tools worth knowing:
 
-A few other Python tools worth knowing in this space:
+- **Pydantic** — foundational to modern Python. FastAPI is built on it, LangChain uses it, the Anthropic SDK uses it. Structured, validated data objects — Python's answer to TypeScript's type system.
+- **Streamlit / Gradio / Chainlit** — rapid Python AI interfaces. Streamlit is general-purpose; Gradio for single-function demos; Chainlit for chat and LLM apps. Any of the three is faster than React for an internal tool or prototype.
+- **Modal** — serverless Python infrastructure with GPU access on demand. Pay for compute used. Not always the most cost-effective; some teams prefer RunPod or self-hosted.
 
-**Pydantic** — not a framework but foundational to modern Python. FastAPI is built on it, LangChain uses it, the Anthropic SDK uses it. It's Python's answer to TypeScript's type system: structured, validated data objects that make API contracts explicit. Students will encounter it everywhere in the Python AI ecosystem.
-
-**Streamlit, Gradio, Chainlit** — three tools for building AI interfaces rapidly in pure Python. Streamlit is the most general. Gradio is optimized for single-function demos and ML model interfaces. Chainlit is for chat interfaces and LLM applications. None are suitable for a marketing site, but any of the three is faster than a React frontend for an internal tool or prototype.
-
-**Modal** — serverless Python infrastructure with GPU access on demand. Modal decorators handle provisioning, scaling, and teardown; you pay only for actual compute time. The caveat: not always the most cost-effective choice — some teams prefer RunPod or self-hosted solutions.
-
-**So why use Flask for this demo?** Because Flask is transparent. There's no framework magic obscuring what's happening. The patterns this demo teaches — write to your database before calling external services, match your tool choice to who will maintain the integration, design for failure at system boundaries — are visible in Flask in a way they aren't in higher-abstraction frameworks. Learn the pattern here; apply it in whatever stack you actually build with.
+**So why use Flask for this demo?** Because Flask is transparent. The patterns — write to your database before calling external services, match your tool choice to who will maintain the integration, design for failure at system boundaries — are visible in a way they aren't in higher-abstraction frameworks. Learn the pattern here; apply it in whatever stack you actually build with.
 
 ---
 

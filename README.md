@@ -14,6 +14,20 @@ Python can get closer than Flask alone. The most credible Python path is **Djang
 
 But the gap that doesn't close: Next.js is fundamentally a React framework. To match it with Python, you'd end up running Django as a backend API with a separate React frontend — essentially reinventing the Next.js architecture with more moving parts. The modern frontend ecosystem, component libraries, and Vercel's global edge network don't have direct Python equivalents. For a client-facing marketing site in 2026, Next.js + Sanity is the more professional choice — not because Python is wrong, but because the JavaScript ecosystem has pulled ahead on the frontend.
 
+**What about agentic AI?** This is where the tradeoffs shift again. For a marketing site with AI features added on — a chatbot, AI-assisted content drafting, lead qualification — Next.js + Sanity still wins. The Vercel AI SDK is the leading tool for AI-enhanced web UIs, and Sanity's MCP server means AI agents can read and write content directly. If you want an AI that drafts blog posts and saves them to the CMS, that's a realistic near-term feature on this stack.
+
+But if the product evolves toward something where AI is the product — agents doing substantial reasoning, orchestration, or data processing — Python becomes competitive again. The Python AI ecosystem (Anthropic SDK, LangChain, LangGraph, LlamaIndex) is significantly more mature than the JavaScript equivalents. At that point the right architecture is a Python AI backend with a React frontend calling it.
+
+Between Flask and Django for that backend: they're not comparable. Flask is too minimal for a production AI application on its own — it gives you routing and not much else. Django is more production-ready but heavyweight if you're building a pure API backend. The honest Python choice for an AI backend in 2026 is **FastAPI** — async-native (which matters when you're waiting on model responses), fast, lightweight, and what most AI frameworks (LangChain, LlamaIndex) use in their examples. It also generates API documentation automatically, which matters when a React frontend needs to know what's available. Django earns its keep when you need the full stack — CMS, admin interface, ORM, auth — alongside the AI backend; FastAPI is the right choice when the backend is primarily serving AI-driven API requests.
+
+A few other Python tools worth knowing in this space:
+
+**Pydantic** — not a framework but foundational to modern Python. FastAPI is built on it, LangChain uses it, the Anthropic SDK uses it. It's Python's answer to TypeScript's type system: structured, validated data objects that make API contracts explicit. Students will encounter it everywhere in the Python AI ecosystem.
+
+**Streamlit** — for a specific use case: building AI demos and internal tools rapidly in pure Python, with no HTML, CSS, or JavaScript. You write Python and get a web UI. Not suitable for a marketing site, but for prototyping an AI feature or building an internal dashboard it's genuinely fast. Very popular in data science and ML communities, and a natural next step after Flask for students who want to ship something AI-powered quickly.
+
+**Modal** — serverless Python infrastructure with GPU access on demand. Relevant when you need to run a model without provisioning a server. Increasingly where serious Python AI workloads run in production. Worth knowing about even if it's not a web framework.
+
 **So why use Flask for this demo?** Because Flask is transparent. There's no framework magic obscuring what's happening. The patterns this demo teaches — write to your database before calling external services, match your tool choice to who will maintain the integration, design for failure at system boundaries — are visible in Flask in a way they aren't in higher-abstraction frameworks. Learn the pattern here; apply it in whatever stack you actually build with.
 
 ---

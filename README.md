@@ -22,9 +22,9 @@ Each stage starts with a **functional requirement** — what the client actually
 
 **Decision: RSS/Atom feed — no external service needed.**
 
-The simplest answer is a feed at a predictable URL. Newsletter platforms (Mailchimp, Buttondown, Substack) poll it on a schedule and distribute new posts automatically. The client points their tool at the URL once; after that it's zero-maintenance.
+The simplest answer is a feed at a predictable URL. Many newsletter platforms (Mailchimp, Buttondown, Substack) poll it on a schedule and distribute new posts automatically — you point them at the URL once and they handle the rest. Some platforms also support push via webhook if you prefer that approach; the choice of RSS here is about simplicity, not capability.
 
-A webhook-based push — notifying a service on every publish — would be the alternative. But push solves a coordination problem: the publisher and the distributor are different people. For a small team where one person does both, it's unnecessary. Start with pull; add push only when the coordination problem actually exists.
+Sending an automatic notification the moment a post goes live only makes sense if two different people are involved: one who writes and publishes, and another who needs to be told so they can share it. For a small team where the same person does both, there's no one to notify who doesn't already know. Add notifications later if the team grows and that handoff becomes a real problem.
 
 **New code:** `/feed` RSS/Atom route in `flaskr/blog.py`  
 **External services:** none

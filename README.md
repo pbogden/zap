@@ -1,3 +1,5 @@
+claude --resume 6e02bb4c-60a0-4024-87d6-314b77c27773
+
 # Web App Integration Demo
 
 A teaching demo built on the [Flask Flaskr tutorial](https://flask.palletsprojects.com/en/stable/tutorial/). Each stage adds a feature driven by a real functional requirement from a small startup client. For each requirement, we ask: what's the simplest approach that actually meets the need? The answer isn't always the same tool.

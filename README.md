@@ -1,78 +1,81 @@
-# Flask + Make.com — Webhook Integration Demo
+# Web App Integration Demo
 
-A teaching demo that extends the [Flask Flaskr tutorial](https://flask.palletsprojects.com/en/stable/tutorial/) with [Make.com](https://make.com) automation. The goal is to make the integration boundary pattern visible: how a web app hands off to external services without coupling to them.
+A teaching demo built on the [Flask Flaskr tutorial](https://flask.palletsprojects.com/en/stable/tutorial/). Each stage adds a feature driven by a real functional requirement from a small startup client. For each requirement, we ask: what's the simplest approach that actually meets the need? The answer isn't always the same tool.
 
 ---
 
-### Why Make?
+## The client
 
-The pattern the demo is teaching — draw a boundary between your app and its integrations,
-treat external services as unreliable, write to the DB before firing any webhook — applies
-whether the integration layer is Make, Zapier, direct API calls, or a queue.
+A small professional services firm — a few people, no dedicated technical staff, growing. They have a website with a blog. They want to reach more clients, capture leads, and share expertise without adding operational overhead.
 
-Make is one answer to the problem, not the only one.
-Make is most clearly justified for **Stage 3** — a human-in-the-loop approval workflow with
-conditional branching is genuinely awkward to implement in Flask.
-You'd be writing a state machine (requests need states like `pending`, `approved`, `declined`; routes for a reviewer to trigger transitions; and the right email wired to each outcome). Routing it through Make is the simpler choice.
+---
 
-Stages 1 and 2 are more debatable. `requests` is already a dependency, so a Slack notification or HubSpot contact creation is a single `requests.post`. The real question isn't "fewer packages" — it's **who owns the integration logic after handoff**. If the client team (not a developer) needs to change what happens when a lead comes in — swap the CRM, add an approval step, change the email copy — Make lets them do that without a code change or deploy. If a developer will always make those changes anyway, Make's value shrinks and the added complexity (external service, account, scenario management) becomes harder to justify.
+## How to read this demo
 
-### Three stages
+Each stage starts with a **functional requirement** — what the client actually needs, in plain language. Then it explains why a particular approach was chosen over alternatives. The decision is the lesson, not just the code.
 
-| Stage | Flask adds | Make does | Pattern illustrated |
-|---|---|---|---|
-| 1 — Blog | `/feed` RSS/Atom route in `blog.py` | nothing — pull is simpler than push here | Pull vs. push; choose the simplest solution |
-| 2 — Lead Capture | `leads.py` blueprint | HubSpot contact + confirmation email | DB-first; boundary between app and integrations |
-| 3 — Case Studies | `case_studies.py` blueprint | Human-in-the-loop approval workflow | Conditional logic; data ownership |
+---
 
-### The core pattern
+## Stage 1 — Blog: reaching an audience
 
-All three stages use the same approach: Flask writes to the database first, then fires a webhook to Make. Make handles everything that crosses a system boundary — LinkedIn, HubSpot, email. Flask never imports a LinkedIn or HubSpot SDK.
+**Requirement:** Content published on the blog should reach subscribers automatically, without the client manually distributing each post.
 
-```
-Flask app                Make                    External services
-─────────────────────────────────────────────────────────────────
-POST /webhook  ──────►  Custom Webhook  ──────►  Slack
-  { payload }            Trigger         ├──────►  LinkedIn
-                                         └──────►  HubSpot / Email
-```
+**Decision: RSS/Atom feed — no external service needed.**
 
-The `make_webhook.py` utility is fire-and-forget: 5-second timeout, catches all exceptions, returns a bool. The app never crashes because Make is unreachable.
+The simplest answer is a feed at a predictable URL. Newsletter platforms (Mailchimp, Buttondown, Substack) poll it on a schedule and distribute new posts automatically. The client points their tool at the URL once; after that it's zero-maintenance.
 
-### Stage 1 — Blog + Content Syndication
+A webhook-based push — notifying a service on every publish — would be the alternative. But push solves a coordination problem: the publisher and the distributor are different people. For a small team where one person does both, it's unnecessary. Start with pull; add push only when the coordination problem actually exists.
 
-**Functional requirement:** The client wants blog content to reach readers automatically, without manual distribution steps.
+**New code:** `/feed` RSS/Atom route in `flaskr/blog.py`  
+**External services:** none
 
-**Why pull, not push:** The simplest answer to this requirement is an RSS/Atom feed — a single route that content distribution tools (Mailchimp, Buttondown, Substack) can poll on a schedule. No webhook, no automation account, no external dependency. If the client doesn't have a newsletter yet, the feed sits dormant and costs nothing. If they do, they point their tool at the URL and it works.
+---
 
-A webhook-based push (notifying LinkedIn, Slack, or a team member on publish) solves a coordination problem — publisher and distributor are different people. For a small team where the same person publishes and shares, it's unnecessary overhead. Start with RSS; add push automation only when the coordination problem actually exists.
+## Stage 2 — Lead Capture: turning visitors into contacts
 
-**New code:** `/feed` RSS/Atom route in `flaskr/blog.py` — no Make required  
-**Make:** not used in this stage
+**Requirement:** When a visitor submits a contact form, their information should be saved and routed to wherever the client manages leads — without losing the submission if something downstream fails.
 
-### Stage 2 — Lead Capture → Make → HubSpot + Email
-A contact form on the site POSTs to Make via webhook. Make creates a HubSpot contact and sends a confirmation email to the prospect.
+**Decision: write to the database first, then call external APIs directly.**
+
+The database write always happens. If the CRM call fails, the lead still exists and can be replayed. This ordering — DB first, external services second — is the pattern that keeps user data safe regardless of what tools are in the integration layer.
+
+Direct API calls are used here rather than an automation platform. The integration logic is simple (one CRM contact, one confirmation email), a developer owns the code, and adding an automation platform in the middle would add complexity without adding value.
 
 **New code:** `flaskr/leads.py`, `flaskr/templates/leads/`  
-**Make setup:** [docs/stage2.md](docs/stage2.md) — export blueprint to `make_scenarios/stage2_lead_capture/` once built
+**External services:** CRM API (e.g. HubSpot), email (e.g. Resend) — called directly from Flask
 
-### Stage 3 — Case Study Request → Make → Approval Workflow
-Visitors can request access to gated case studies. Make routes the request to the reviewer, then conditionally sends the download link or a decline email.
+---
+
+## Stage 3 — Gated Content: a human-in-the-loop approval workflow
+
+**Requirement:** Visitors can request access to premium content. The client reviews each request and decides whether to grant access — with the appropriate email sent either way.
+
+**Decision: automation platform (Make) for the approval workflow.**
+
+This is where an automation platform earns its place. The workflow has conditional branching (approve or decline), requires a human decision in the middle, and needs to be modifiable by a non-developer — the client should be able to change the email copy or adjust the approval logic without a code change or deployment.
+
+Implementing this in Flask alone means writing a state machine: request states (`pending`, `approved`, `declined`), routes for the reviewer to trigger transitions, and the right email wired to each outcome. Make handles all of this visually, and hands ongoing ownership to the client.
 
 **New code:** `flaskr/case_studies.py`, `flaskr/templates/case_studies/`  
-**Make setup:** [docs/stage3.md](docs/stage3.md) — export blueprint to `make_scenarios/stage3_case_study_approval/` once built
+**External services:** Make — justified here because a non-developer needs to own and modify the workflow
 
-**Limitation:** The case study list is seeded directly in the DB. There's no admin UI, so adding or retiring a case study requires a code change. For a real handoff, the client needs either a simple admin interface or a platform with a built-in CMS.
+**Limitation:** Case studies are seeded directly in the database — there's no admin UI. Adding or retiring a case study requires a code change. For a real handoff, the client needs either a simple admin interface or a platform with a built-in CMS.
 
-### Why these patterns matter regardless of stack
+---
 
-The Flask demo is simple enough that the patterns are visible. But they apply in any stack:
+## The patterns behind the decisions
 
-- **DB-first before any external call** — whether you're in Flask, Next.js, or anything else, write to your own datastore before notifying an external service
-- **The app owns data and UX; external services own integrations** — this boundary holds whether the "app" is Flask, Webflow, or Next.js, and whether the integration layer is Make, Zapier, or direct API calls
-- **Treat external services as unreliable** — timeout, catch exceptions, log failures, have a fallback
+The specific tools change. The underlying principles don't.
 
-See [docs/design-decisions.md](docs/design-decisions.md) for the full rationale with historical and modern context.
+**Pull before push.** Pull-based integrations (RSS, polling) are simpler and more durable than push-based ones (webhooks) when real-time delivery isn't required. Start with pull; reach for push when you need immediacy or the receiver can't poll.
+
+**DB-first before any external call.** Write to your own datastore before notifying an external service. If the external service is unavailable, your data is still safe.
+
+**Match tool ownership to who will maintain it.** Direct API calls in code are right when a developer owns the integration. An automation platform is right when a non-developer needs to modify the logic after handoff without a deployment.
+
+**External services fail. Design for it.** Timeout, catch exceptions, log failures, have a fallback. Never let a third-party outage surface as a 500 or lose a user's data.
+
+See [docs/design-decisions.md](docs/design-decisions.md) for the full rationale.
 
 ---
 
@@ -81,21 +84,18 @@ See [docs/design-decisions.md](docs/design-decisions.md) for the full rationale 
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+flask --app flaskr init-db
+flask --app flaskr run --debug
 ```
 
-Create a `.env` file with your Make webhook URLs (the app runs fine without them — webhook calls are silently skipped if a URL isn't set):
+Create a `.env` file — the app runs without external services configured, calls are silently skipped if credentials aren't set:
 
 ```
 SECRET_KEY=change-me
-MAKE_WEBHOOK_BLOG_POST=
-MAKE_WEBHOOK_LEAD_CAPTURE=
+CRM_API_KEY=
+EMAIL_API_KEY=
 MAKE_WEBHOOK_CASE_STUDY_REQUEST=
 APPROVAL_EMAIL=
-```
-
-```bash
-flask --app flaskr init-db
-flask --app flaskr run --debug
 ```
 
 Visit `http://localhost:5000`. Register an account to create posts and test the forms.
@@ -106,17 +106,15 @@ Visit `http://localhost:5000`. Register an account to create posts and test the 
 
 | Doc | Contents |
 |---|---|
-| [docs/design-decisions.md](docs/design-decisions.md) | Architectural principles behind the demo — patterns worth carrying into any project |
-| [docs/stage1.md](docs/stage1.md) | Stage 1 Make setup: webhook + RSS alternate approach |
-| [docs/stage2.md](docs/stage2.md) | Stage 2 Make setup: lead capture → HubSpot + email |
-| [docs/stage3.md](docs/stage3.md) | Stage 3 Make setup: approval workflow |
+| [docs/design-decisions.md](docs/design-decisions.md) | Architectural principles — the why behind each decision |
+| [docs/stage1.md](docs/stage1.md) | Stage 1: RSS/Atom feed implementation |
+| [docs/stage2.md](docs/stage2.md) | Stage 2: lead capture, DB-first pattern, direct API calls |
+| [docs/stage3.md](docs/stage3.md) | Stage 3: approval workflow, Make setup |
 | [docs/free-tier.md](docs/free-tier.md) | Make free plan constraints and workarounds |
-| [framer-demo/](framer-demo/README.md) | Same Stage 2 outcome, zero backend — Framer form fires the same Make scenario |
 
 ---
 
 ## Based On
 
 - [Flask Flaskr Tutorial](https://flask.palletsprojects.com/en/stable/tutorial/) (BSD-3-Clause)
-- [Make.com](https://make.com) for automation scenarios
 - Built for the Roux Institute at Northeastern University

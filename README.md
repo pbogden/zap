@@ -39,11 +39,16 @@ POST /webhook  ──────►  Custom Webhook  ──────►  Sla
 
 The `make_webhook.py` utility is fire-and-forget: 5-second timeout, catches all exceptions, returns a bool. The app never crashes because Make is unreachable.
 
-### Stage 1 — Blog Post → Make → Slack + LinkedIn
-When a post is published, Flask fires a webhook to Make. Make cross-posts to LinkedIn and sends a Slack notification. `blog.py` also serves a `/feed` RSS route as a pull-model alternative.
+### Stage 1 — Blog + Content Syndication
 
-**New code:** `flaskr/make_webhook.py`, one webhook call and `/feed` RSS route in `flaskr/blog.py`  
-**Make setup:** [docs/stage1.md](docs/stage1.md) — export blueprint to `make_scenarios/stage1_blog_notify/` once built
+**Functional requirement:** The client wants blog content to reach readers automatically, without manual distribution steps.
+
+**Why pull, not push:** The simplest answer to this requirement is an RSS/Atom feed — a single route that content distribution tools (Mailchimp, Buttondown, Substack) can poll on a schedule. No webhook, no automation account, no external dependency. If the client doesn't have a newsletter yet, the feed sits dormant and costs nothing. If they do, they point their tool at the URL and it works.
+
+A webhook-based push (notifying LinkedIn, Slack, or a team member on publish) solves a coordination problem — publisher and distributor are different people. For a small team where the same person publishes and shares, it's unnecessary overhead. Start with RSS; add push automation only when the coordination problem actually exists.
+
+**New code:** `/feed` RSS/Atom route in `flaskr/blog.py` — no Make required  
+**Make:** not used in this stage
 
 ### Stage 2 — Lead Capture → Make → HubSpot + Email
 A contact form on the site POSTs to Make via webhook. Make creates a HubSpot contact and sends a confirmation email to the prospect.

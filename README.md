@@ -39,7 +39,7 @@ Sending an automatic notification the moment a post goes live only makes sense i
 
 The database write always happens. If the CRM call fails, the lead still exists and can be replayed. This ordering — DB first, external services second — is the pattern that keeps user data safe regardless of what tools are in the integration layer.
 
-Direct API calls are used here rather than an automation platform. The integration logic is simple (one CRM contact, one confirmation email), a developer owns the code, and adding an automation platform in the middle would add complexity without adding value.
+Direct API calls are used here because this is a Flask app and a developer is implied. But the right choice in production depends on who owns the system after handoff. If someone non-technical needs to swap the CRM, change the confirmation email, or add a step — without calling a developer — then a native integration (many CRMs have direct connectors for common website platforms) or an automation platform is the better answer. The DB-first principle applies either way; what changes is where the integration logic lives.
 
 **New code:** `flaskr/leads.py`, `flaskr/templates/leads/`  
 **External services:** CRM API (e.g. HubSpot), email (e.g. Resend) — called directly from Flask
